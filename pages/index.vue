@@ -26,18 +26,28 @@
     <div class="w-full bg-[#FAFAFC] pb-10">
       <!-- Mobile Filters - Inline on mobile -->
       <div class="lg:hidden w-full px-4 sm:px-6 md:px-8">
-        <SearchFilters />
+        <SearchFilters @filters-collapsed-change="handleFiltersCollapsedChange" />
       </div>
 
       <!-- Desktop Layout -->
-      <div class="hidden lg:flex w-full">
-        <!-- Desktop Sidebar -->
-        <div class="w-[262px] flex-shrink-0 mr-5">
-          <SearchFilters />
+      <div class="hidden lg:flex w-full transition-all duration-300">
+        <!-- Desktop Sidebar - Responsive width -->
+        <div 
+          :class="[
+            'flex-shrink-0 transition-all duration-300 ease-in-out',
+            desktopFiltersCollapsed ? 'w-16' : 'w-[262px]'
+          ]"
+        >
+          <SearchFilters @filters-collapsed-change="handleFiltersCollapsedChange" />
         </div>
 
-        <!-- Desktop Main Content -->
-        <div class="flex-1 min-w-0">
+        <!-- Desktop Main Content - Responsive margin -->
+        <div 
+          :class="[
+            'flex-1 min-w-0 transition-all duration-300 ease-in-out',
+            desktopFiltersCollapsed ? 'ml-4' : 'ml-5'
+          ]"
+        >
           <!-- Category Tabs -->
           <div
             class="flex mt-10 items-stretch gap-6 text-[#2F72BC] font-semibold overflow-x-auto pb-2 scrollbar-hide"
@@ -99,6 +109,9 @@ import { FILTER_OPTIONS } from '~/constants/filterOptions'
 // Use the Pinia store
 const searchStore = useSearchStore()
 
+// Track desktop filters collapsed state
+const desktopFiltersCollapsed = ref(true)
+
 const currentCategory = computed(() => {
   const selectedAssetType = searchStore.selectedFilters[FilterType.ASSET]
   
@@ -108,6 +121,11 @@ const currentCategory = computed(() => {
   
   return assetOption?.name || 'Design Assets'
 })
+
+// Handle filters collapsed state change
+const handleFiltersCollapsedChange = (collapsed: boolean) => {
+  desktopFiltersCollapsed.value = collapsed
+}
 
 // SEO Meta
 useHead({

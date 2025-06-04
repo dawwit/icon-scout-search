@@ -5,6 +5,11 @@ import { FILTER_OPTIONS } from '~/constants/filterOptions'
 // Use the Pinia store
 const searchStore = useSearchStore()
 
+// Emit for communicating state to parent
+const emit = defineEmits<{
+  filtersCollapsedChange: [collapsed: boolean]
+}>()
+
 // Track if entire filters section is collapsed
 const filtersCollapsed = ref(true)
 
@@ -25,7 +30,13 @@ const toggleFilterGroup = (groupId: string) => {
 
 const toggleFiltersSection = () => {
   filtersCollapsed.value = !filtersCollapsed.value
+  emit('filtersCollapsedChange', filtersCollapsed.value)
 }
+
+// Emit initial state
+onMounted(() => {
+  emit('filtersCollapsedChange', filtersCollapsed.value)
+})
 
 // Count active filters
 const activeFiltersCount = computed(() => {
@@ -34,32 +45,53 @@ const activeFiltersCount = computed(() => {
 </script>
 
 <template>
-  <aside class="bg-white w-full">
-    <!-- Collapsible Filter Header -->
-    <div class="border-b border-[#EBEDF5] w-full">
-      <button
-        @click="toggleFiltersSection"
-        class="flex items-center justify-between w-full px-4 sm:px-6 lg:px-5 py-4 hover:bg-gray-50 transition-colors touch-manipulation"
-      >
-        <div class="flex items-center gap-3">
+  <aside class="bg-white w-full h-full">
+    <!-- Desktop Collapsed State -->
+    <div v-if="filtersCollapsed" class="hidden lg:block h-full">
+      <!-- Compact Filter Toggle -->
+      <div class="p-3 border-b border-[#EBEDF5]">
+        <button
+          @click="toggleFiltersSection"
+          class="flex flex-col items-center gap-2 w-full p-2 hover:bg-gray-50 transition-colors touch-manipulation rounded"
+          title="Show Filters"
+        >
           <Icon name="heroicons:funnel" class="w-5 h-5 text-[#636C7E]" />
-          <div class="text-[#2E334C] font-averta text-base font-semibold">
-            Filters
-          </div>
-          <div v-if="activeFiltersCount > 0" class="bg-[#0092E4] text-white text-xs font-semibold px-2 py-1 rounded-full min-w-[20px] text-center">
+          <div v-if="activeFiltersCount > 0" class="bg-[#0092E4] text-white text-xs font-semibold px-1.5 py-0.5 rounded-full min-w-[18px] text-center leading-tight">
             {{ activeFiltersCount }}
           </div>
-        </div>
-        <Icon 
-          :name="filtersCollapsed ? 'heroicons:chevron-down' : 'heroicons:chevron-up'" 
-          class="w-5 h-5 text-[#636C7E] transition-transform"
-        />
-      </button>
+          <div class="text-xs text-[#636C7E] font-medium leading-tight text-center">
+            Filters
+          </div>
+        </button>
+      </div>
     </div>
 
-    <!-- Collapsible Filters Content -->
-    <Transition name="filters-collapse">
-      <div v-if="!filtersCollapsed" class="overflow-hidden">
+    <!-- Mobile (Always Visible) and Desktop Expanded States -->
+    <div v-if="!filtersCollapsed" class="w-full lg:block">
+      <!-- Collapsible Filter Header -->
+      <div class="border-b border-[#EBEDF5] w-full">
+        <button
+          @click="toggleFiltersSection"
+          class="flex items-center justify-between w-full px-4 sm:px-6 lg:px-5 py-4 hover:bg-gray-50 transition-colors touch-manipulation"
+        >
+          <div class="flex items-center gap-3">
+            <Icon name="heroicons:funnel" class="w-5 h-5 text-[#636C7E]" />
+            <div class="text-[#2E334C] font-averta text-base font-semibold">
+              Filters
+            </div>
+            <div v-if="activeFiltersCount > 0" class="bg-[#0092E4] text-white text-xs font-semibold px-2 py-1 rounded-full min-w-[20px] text-center">
+              {{ activeFiltersCount }}
+            </div>
+          </div>
+          <Icon 
+            name="heroicons:chevron-up"
+            class="w-5 h-5 text-[#636C7E] transition-transform"
+          />
+        </button>
+      </div>
+
+      <!-- Filters Content -->
+      <div class="overflow-hidden">
         <!-- Iconscout Exclusive Toggle -->
         <div class="px-4 sm:px-6 lg:px-5 py-4 border-b border-[#EBEDF5]">
           <div class="flex items-center justify-between">
@@ -138,7 +170,32 @@ const activeFiltersCount = computed(() => {
           </button>
         </div>
       </div>
-    </Transition>
+    </div>
+
+    <!-- Mobile Always Visible State (when desktop is collapsed) -->
+    <div v-if="filtersCollapsed" class="lg:hidden w-full">
+      <!-- Collapsible Filter Header for Mobile -->
+      <div class="border-b border-[#EBEDF5] w-full">
+        <button
+          @click="toggleFiltersSection"
+          class="flex items-center justify-between w-full px-4 sm:px-6 py-4 hover:bg-gray-50 transition-colors touch-manipulation"
+        >
+          <div class="flex items-center gap-3">
+            <Icon name="heroicons:funnel" class="w-5 h-5 text-[#636C7E]" />
+            <div class="text-[#2E334C] font-averta text-base font-semibold">
+              Filters
+            </div>
+            <div v-if="activeFiltersCount > 0" class="bg-[#0092E4] text-white text-xs font-semibold px-2 py-1 rounded-full min-w-[20px] text-center">
+              {{ activeFiltersCount }}
+            </div>
+          </div>
+          <Icon 
+            name="heroicons:chevron-down"
+            class="w-5 h-5 text-[#636C7E] transition-transform"
+          />
+        </button>
+      </div>
+    </div>
   </aside>
 </template>
 
@@ -170,24 +227,6 @@ const activeFiltersCount = computed(() => {
   max-height: 300px;
   opacity: 1;
   transform: translateY(0);
-}
-
-.filters-collapse-enter-active,
-.filters-collapse-leave-active {
-  transition: all 0.4s ease;
-  overflow: hidden;
-}
-
-.filters-collapse-enter-from,
-.filters-collapse-leave-to {
-  max-height: 0;
-  opacity: 0;
-}
-
-.filters-collapse-enter-to,
-.filters-collapse-leave-from {
-  max-height: 800px;
-  opacity: 1;
 }
 
 .touch-manipulation {
