@@ -1,23 +1,23 @@
 <script setup lang="ts">
-const { searchQuery, handleSearch } = useSearch()
+const searchStore = useSearchStore()
 
 const searchInput = ref('')
 
 // Sync searchInput with the composable's searchQuery
-watch(() => searchQuery.value, (newQuery) => {
+watch(() => searchStore.searchQuery, (newQuery) => {
   searchInput.value = newQuery
 }, { immediate: true })
 
 const performSearch = () => {
   if (searchInput.value.trim()) {
-    handleSearch(searchInput.value.trim())
+    searchStore.handleSearch(searchInput.value.trim())
   }
 }
 
 // Clear search when input is empty
 watch(searchInput, (newValue) => {
   if (newValue.length === 0) {
-    handleSearch('')
+    searchStore.handleSearch('')
   }
 })
 </script>

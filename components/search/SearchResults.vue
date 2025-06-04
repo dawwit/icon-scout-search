@@ -12,8 +12,8 @@ const props = withDefaults(defineProps<Props>(), {
   onTagClick: () => {}
 })
 
-// Use search composable directly
-const { searchResults, isLoading, loadMore } = useSearch()
+// Use search store directly
+const searchStore = useSearchStore()
 
 const popularTags = [
   'Conversation Design Assets',
@@ -34,8 +34,8 @@ const maxLoads = 2
 const assetsPerLoad = 15
 
 // Initialize displayed assets
-watch(() => searchResults.value.assets, (newAssets) => {
-  if (newAssets.length > 0) {
+watch(() => searchStore.searchResults.assets, (newAssets) => {
+  if (newAssets && newAssets.length > 0) {
     displayedAssets.value = newAssets.slice(0, assetsPerLoad)
     loadCount.value = 1
   } else {
@@ -46,12 +46,12 @@ watch(() => searchResults.value.assets, (newAssets) => {
 
 const canLoadMore = computed(() => {
   return loadCount.value < maxLoads && 
-         displayedAssets.value.length < searchResults.value.assets.length
+         displayedAssets.value.length < (searchStore.searchResults.assets?.length ?? 0)
 })
 
 const shouldShowLoginPrompt = computed(() => {
   return loadCount.value >= maxLoads || 
-         (displayedAssets.value.length >= searchResults.value.assets.length && loadCount.value > 0)
+         (displayedAssets.value.length >= (searchStore.searchResults.assets?.length ?? 0) && loadCount.value > 0)
 })
 
 const handleLoadMore = async () => {
@@ -63,8 +63,8 @@ const handleLoadMore = async () => {
   await new Promise(resolve => setTimeout(resolve, 500))
   
   const startIndex = displayedAssets.value.length
-  const endIndex = Math.min(startIndex + assetsPerLoad, searchResults.value.assets.length)
-  const newAssets = searchResults.value.assets.slice(startIndex, endIndex)
+  const endIndex = Math.min(startIndex + assetsPerLoad, searchStore.searchResults.assets?.length ?? 0)
+  const newAssets = (searchStore.searchResults.assets ?? []).slice(startIndex, endIndex)
   
   displayedAssets.value.push(...newAssets)
   loadCount.value++
@@ -81,7 +81,7 @@ const handleTagClick = (tag: string) => {
 
 const handleGetStarted = () => {
   // This could trigger a modal or redirect to registration
-  loadMore()
+  searchStore.loadMore()
 }
 </script>
 
@@ -102,7 +102,7 @@ const handleGetStarted = () => {
     </div>
 
     <!-- Loading State -->
-    <div v-if="isLoading" class="flex justify-center items-center py-12">
+    <div v-if="searchStore.isLoading" class="flex justify-center items-center py-12">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0092E4]"/>
       <span class="ml-3 text-[#636C7E]">Loading assets...</span>
     </div>

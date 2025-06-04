@@ -11,7 +11,7 @@ defineEmits<{
   click: [asset: Asset]
 }>()
 
-const { handleDownload } = useSearch()
+const { handleDownload } = useSearchStore()
 
 // Track if we've already shown a fallback to prevent loops
 const hasFallback = ref(false)

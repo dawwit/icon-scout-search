@@ -13,7 +13,7 @@ export interface FilterGroupOption {
 }
 
 export const FILTER_OPTIONS: Record<string, FilterGroupOption> = {
-  assets: {
+  asset: {
     name: 'Asset',
     type: FilterType.ASSET,
     options: [
@@ -47,7 +47,7 @@ export const FILTER_OPTIONS: Record<string, FilterGroupOption> = {
 
 // Type for selected filters - just values
 export type SelectedFilters = {
-  [FilterType.ASSET]?: string
-  [FilterType.PRICE]?: string
-  [FilterType.SORT]?: string
+  [FilterType.ASSET]: string
+  [FilterType.PRICE]: string
+  [FilterType.SORT]: string
 } 

@@ -2,27 +2,22 @@
 import type { FilterType } from '~/types/search'
 import { FILTER_OPTIONS } from '~/constants/filterOptions'
 
-// Use the search composable directly
-const { selectedFilters, updateFilter } = useSearch()
+// Use the Pinia store
+const searchStore = useSearchStore()
 
 // Track which filter groups are expanded (local UI state)
 const expandedGroups = ref<Record<string, boolean>>({
-  assets: true,
+  asset: true,
   price: true,
-  view: true,
   sortBy: true
 })
 
 const toggleFilter = (filterType: FilterType, value: string) => {
-  updateFilter(filterType, value)
+  searchStore.updateFilter(filterType, value)
 }
 
 const toggleFilterGroup = (groupId: string) => {
   expandedGroups.value[groupId] = !expandedGroups.value[groupId]
-}
-
-const isFilterSelected = (filterType: FilterType, value: string): boolean => {
-  return selectedFilters.value[filterType] === value
 }
 </script>
 
@@ -102,7 +97,7 @@ const isFilterSelected = (filterType: FilterType, value: string): boolean => {
                   <div
                     :class="[
                       'border border-solid rounded-full flex flex-shrink-0 h-4 w-4 transition-colors',
-                      isFilterSelected(option.type, option.value)
+                      searchStore.selectedFilters[option.type] === option.value
                         ? 'border-[#3D92DE] bg-[#3D92DE]' 
                         : 'border-[#8F95B2]'
                     ]"

@@ -4,9 +4,9 @@
     <SearchHeader />
 
     <!-- Error Message -->
-    <div v-if="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded m-4">
+    <div v-if="searchStore.error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded m-4">
       <strong class="font-bold">Error:</strong>
-      <span class="block sm:inline"> {{ error }}</span>
+      <span class="block sm:inline"> {{ searchStore.error }}</span>
     </div>
 
     <!-- Main Content Area -->
@@ -15,10 +15,10 @@
     >
       <!-- Page Title and Description -->
       <div class="text-black text-[35px] font-bold">
-        {{ searchResults.total }} {{ currentCategory }}
+        {{ searchStore.searchResults.total }} {{ currentCategory }}
       </div>
       <div class="text-[#5A607D] font-normal mt-1">
-        {{ searchResults.total }} assets exclusively selected by our designer community.
+        {{ searchStore.searchResults.total }} assets exclusively selected by our designer community.
       </div>
     </div>
 
@@ -36,10 +36,10 @@
           class="flex mt-10 items-stretch gap-6 text-[#2F72BC] font-semibold flex-wrap"
         >
           <button
-            v-for="option in FILTER_OPTIONS.assets.options"
+            v-for="option in FILTER_OPTIONS.asset.options"
             :key="option.value"
-            :class="['cursor-pointer hover:text-black transition-colors', selectedFilters[FilterType.ASSET] === option.value ? 'text-black border-b-2 border-black' : '']"
-            @click="updateFilter(FilterType.ASSET, option.value)"
+            :class="['cursor-pointer hover:text-black transition-colors', searchStore.selectedFilters[FilterType.ASSET] === option.value ? 'text-black border-b-2 border-black' : '']"
+            @click="searchStore.updateFilter(FilterType.ASSET, option.value)"
           >
             {{ option.name }}
           </button>
@@ -61,38 +61,37 @@ import type { Asset } from '~/types/search'
 import { FilterType } from '~/types/search'
 import { FILTER_OPTIONS } from '~/constants/filterOptions'
 
-// Use the search composable directly
-const {
-  searchQuery,
-  selectedFilters,
-  error,
-  searchResults,
-  updateFilter,
-  handleSearch
-} = useSearch()
+// Use the Pinia store
+const searchStore = useSearchStore()
 
 const currentCategory = computed(() => {
-  return FILTER_OPTIONS[selectedFilters.value[FilterType.ASSET] || 'assets']?.name || 'Design Assets'
+  const selectedAssetType = searchStore.selectedFilters[FilterType.ASSET]
+  
+  const assetOption = FILTER_OPTIONS.asset.options.find(
+    option => option.value === selectedAssetType
+  )
+  
+  return assetOption?.name || 'Design Assets'
 })
 
 // SEO Meta
 useHead({
-  title: computed(() => `${searchQuery.value} ${currentCategory.value} | IconScout `),
+  title: computed(() => `${searchStore.searchQuery} ${currentCategory.value} | IconScout `),
   meta: [
     {
       name: "description",
       content: computed(() => 
-        `${searchResults.value.total} ${currentCategory.value.toLowerCase()} exclusively selected by our designer community. Search and discover premium design assets.`
+        `${searchStore.searchResults.total} ${currentCategory.value?.toLowerCase() || 'design assets'} exclusively selected by our designer community. Search and discover premium design assets.`
       ),
     },
     {
       property: "og:title",
-      content: computed(() => `${searchResults.value.total} ${currentCategory.value} - IconScout Search`),
+      content: computed(() => `${searchStore.searchResults.total} ${currentCategory.value} - IconScout Search`),
     },
     {
       property: "og:description",
       content: computed(() => 
-        `${searchResults.value.total} ${currentCategory.value.toLowerCase()} exclusively selected by our designer community. Search and discover premium design assets.`
+        `${searchStore.searchResults.total} ${currentCategory.value.toLowerCase()} exclusively selected by our designer community. Search and discover premium design assets.`
       ),
     },
     {
@@ -108,7 +107,7 @@ const handleAssetClick = (_asset: Asset) => {
 }
 
 const handleTagClick = (tag: string) => {
-  handleSearch(tag)
+  searchStore.handleSearch(tag)
 }
 </script>
 

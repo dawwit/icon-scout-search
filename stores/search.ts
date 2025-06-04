@@ -1,3 +1,4 @@
+import { defineStore } from 'pinia'
 import type { Asset, SearchResults } from '~/types/search'
 import { FilterType } from '~/types/search'
 import type { SelectedFilters } from '~/constants/filterOptions'
@@ -68,7 +69,7 @@ const transformAsset = (apiAsset: IconScoutAsset): Asset | null => {
   }
 }
 
-export const useSearch = () => {
+export const useSearchStore = defineStore('search', () => {
   const config = useRuntimeConfig()
   const route = useRoute()
   const router = useRouter()
@@ -221,7 +222,7 @@ export const useSearch = () => {
     }
   }
 
-  // Public API functions
+  // Actions
   const handleSearch = (query: string) => {
     searchQuery.value = query
     updateUrl(query)
@@ -276,15 +277,18 @@ export const useSearch = () => {
   })
 
   return {
+    // State
     searchQuery: readonly(searchQuery),
     isLoading: readonly(isLoading),
     error: readonly(error),
     searchResults,
-    selectedFilters: readonly(selectedFilters),
+    selectedFilters,
+    
+    // Actions
     updateFilter,
     handleSearch,
     loadMore,
     handleDownload,
     performSearch
   }
-} 
+}) 
