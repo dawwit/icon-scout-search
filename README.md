@@ -7,17 +7,19 @@ A modern, performant icon search application built with Nuxt 3, implementing the
 - **Server-Side Rendering (SSR)** - Optimized for performance and SEO
 - **Modern UI** - Built with shadcn/nuxt and Tailwind CSS
 - **Type Safety** - Full TypeScript implementation with strict mode
-- **Testing** - Unit tests with Vitest and E2E tests with Playwright
-- **Accessibility** - WCAG compliant design principles
+- **State Management** - Pinia for reactive state management
+- **Favorites System** - Save and manage favorite assets
 - **Performance** - Optimized for Core Web Vitals
 - **Real API Integration** - Uses IconScout REST API v3
+- **Responsive Design** - Mobile-first approach with touch optimization
 
 ## 🛠 Tech Stack
 
 - **Framework**: Nuxt 3
 - **Styling**: Tailwind CSS + shadcn/nuxt
 - **Language**: TypeScript (strict mode)
-- **Testing**: Vitest (unit) + Playwright (E2E)
+- **State Management**: Pinia
+- **Testing**: Vitest (unit) + Playwright (E2E) - *Setup ready*
 - **Validation**: Zod
 - **Linting**: ESLint
 - **API**: IconScout REST API v3
@@ -39,6 +41,9 @@ This application uses the IconScout REST API v3. To get started:
    
    # Required for download functionality (optional)
    ICONSCOUT_CLIENT_SECRET=your_client_secret_here
+   
+   # Site URL for SEO (optional)
+   NUXT_PUBLIC_SITE_URL=http://localhost:3000
    ```
 
 3. **API Features**:
@@ -70,18 +75,20 @@ npm run preview
 ## 🧪 Testing
 
 ```bash
-# Run all tests
-npm test
-
-# Run unit tests
+# Run unit tests (setup ready)
 npm run test:unit
 
-# Run E2E tests
+# Run E2E tests (setup ready)
 npm run test:e2e
 
 # Run E2E tests with UI
 npm run test:e2e:ui
+
+# Run all tests
+npm test
 ```
+
+*Note: Test files are ready to be implemented following TDD approach*
 
 ## 🔧 Development
 
@@ -98,16 +105,18 @@ npm run lint:fix
 ```
 ├── assets/css/          # Global styles and CSS variables
 ├── components/          # Vue components
-│   ├── search/         # Search-related components
-│   └── ui/             # shadcn/nuxt UI components
-├── composables/         # Vue composables (including useSearch)
+│   └── search/         # Search-related components
+├── composables/         # Vue composables (favorites management)
+├── constants/           # Application constants
 ├── docs/               # Documentation and API reference
 ├── pages/              # Nuxt pages (file-based routing)
-├── tests/              # Test files
+├── public/             # Static assets
+├── server/             # Server-side API routes
+├── stores/             # Pinia stores (search state management)
+├── tests/              # Test files (setup ready)
 │   ├── unit/          # Unit tests
 │   └── e2e/           # End-to-end tests
-├── types/              # TypeScript type definitions
-└── utils/              # Utility functions
+└── types/              # TypeScript type definitions
 ```
 
 ## 🎯 Key Design Decisions
@@ -115,7 +124,7 @@ npm run lint:fix
 ### Architecture
 - **File-based routing** with Nuxt 3 for intuitive navigation
 - **Component composition** following Vue 3 best practices
-- **Pure functions** for business logic to ensure testability
+- **Pinia for state management** with reactive stores
 - **Separation of concerns** between UI, logic, and data layers
 
 ### API Integration
@@ -128,12 +137,13 @@ npm run lint:fix
 - **SSR by default** for optimal initial page load
 - **Image optimization** with @nuxt/image
 - **Font optimization** with @nuxt/fonts
+- **Touch optimization** for mobile devices
 - **Prerendering** for static content
 
 ### Developer Experience
 - **TypeScript strict mode** for maximum type safety
 - **ESLint configuration** for consistent code quality
-- **Test-driven development** approach
+- **Test-driven development** setup ready
 - **Conventional commits** for clear git history
 
 ## 🌐 SEO & Accessibility
@@ -143,11 +153,19 @@ npm run lint:fix
 - ARIA labels and keyboard navigation
 - Color contrast compliance
 - Screen reader optimization
+- Mobile-first responsive design
+
+## 📱 Mobile Optimization
+
+- Touch-friendly interface with proper touch targets
+- Responsive design with mobile-first approach
+- Optimized performance for mobile devices
+- Touch gesture support
 
 ## 📝 Contributing
 
 1. Follow conventional commit format
-2. Write tests before implementing features
+2. Write tests before implementing features (TDD approach)
 3. Ensure TypeScript strict compliance
 4. Maintain WCAG accessibility standards
 5. Document architectural decisions
