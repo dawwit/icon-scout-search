@@ -79,7 +79,7 @@ const handleAssetClick = (asset: Asset) => {
 </script>
 
 <template>
-  <main class="mt-16 w-full lg:max-w-full lg:mt-10">
+  <main class="mt-5 w-full lg:max-w-full lg:mt-5">
     <!-- Tags Section -->
     <div
       class="flex w-full items-stretch gap-2.5 font-averta text-sm text-[#636C7E] font-normal text-center leading-none flex-wrap lg:max-w-full mb-6"

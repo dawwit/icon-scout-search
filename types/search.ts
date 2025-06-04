@@ -26,6 +26,7 @@ export interface NavigationItem {
 
 export interface Asset {
   id: string
+  uuid: string
   title: string
   description?: string
   imageUrl: string

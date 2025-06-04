@@ -54,6 +54,15 @@ interface IconScoutSearchResponse {
   }
 }
 
+// Server download response type
+interface DownloadResponse {
+  success: boolean
+  download_url: string
+  expires_at: string
+  asset_uuid: string
+  format: string
+}
+
 // Transform API response to internal format
 const transformAsset = (apiAsset: IconScoutAsset): Asset | null => {
   // Check if apiAsset has required properties
@@ -83,6 +92,7 @@ const transformAsset = (apiAsset: IconScoutAsset): Asset | null => {
   try {
     return {
       id: apiAsset.id.toString(),
+      uuid: apiAsset.uuid,
       title: apiAsset.name || 'Untitled',
       description: '', // Not provided in this API response
       imageUrl,
@@ -115,14 +125,10 @@ export const useSearch = () => {
   const router = useRouter()
   
   // API Client Functions
-  const createApiHeaders = (includeSecret = false) => {
+  const createApiHeaders = () => {
     const headers: Record<string, string> = {
       'Client-ID': config.public.iconscoutClientId || '',
       'Content-Type': 'application/json'
-    }
-    
-    if (includeSecret) {
-      headers['Client-Secret'] = config.iconscoutClientSecret || ''
     }
     
     return headers
@@ -161,9 +167,6 @@ export const useSearch = () => {
         headers: createApiHeaders()
       })
 
-      console.log('Response status:', response.status)
-      console.log('Response headers:', response.headers)
-
       if (!response.ok) {
         const errorText = await response.text()
         console.error('API Error Response:', errorText)
@@ -171,7 +174,6 @@ export const useSearch = () => {
       }
 
       const data = await response.json()
-      console.log('Raw API response:', data)
       return data
     } catch (error) {
       console.error('Search API error:', error)
@@ -192,22 +194,6 @@ export const useSearch = () => {
         }
       }
     }
-  }
-
-  const downloadAsset = async (itemUuid: string, format: string): Promise<{ download_url: string; expires_at: string }> => {
-    const url = `${API_BASE_URL}/items/${itemUuid}/api-download`
-    
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: createApiHeaders(true),
-      body: JSON.stringify({ format })
-    })
-
-    if (!response.ok) {
-      throw new Error(`Download failed: ${response.status} ${response.statusText}`)
-    }
-
-    return await response.json()
   }
 
   // Initialize search query from URL or default
@@ -374,16 +360,30 @@ export const useSearch = () => {
     }
   }
 
-  const handleDownload = async (asset: Asset, format: string) => {
+  const handleDownload = async (asset: Asset) => {
     try {
-      if (!config.iconscoutClientSecret) {
-        throw new Error('API secret not configured for downloads')
+      // Determine the format from the asset's image URL
+      const extension = asset.imageUrl.split('.').pop()
+      if (!extension) {
+        throw new Error('Unable to determine asset format')
       }
-      
-      const downloadResponse = await downloadAsset(asset.id, format)
+
+      // Call our server route instead of making direct API calls
+      const response = await $fetch<DownloadResponse>(`/api/download/${asset.uuid}`, {
+        method: 'POST',
+        body: {
+          format: extension
+        }
+      })
+
+      if (!response.success) {
+        throw new Error('Download request failed')
+      }
+
+      console.log('Download URL generated successfully:', response.download_url)
       
       // Open download URL in new tab
-      window.open(downloadResponse.download_url, '_blank')
+      window.open(response.download_url, '_blank')
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Download failed'
       console.error('Download error:', err)

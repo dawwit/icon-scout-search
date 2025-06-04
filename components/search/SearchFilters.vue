@@ -71,7 +71,7 @@ const isFilterSelected = (filterType: FilterType, value: string): boolean => {
           >
             <span
               class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-1"
-            ></span>
+            />
           </button>
         </div>
       </div>
@@ -115,13 +115,7 @@ const isFilterSelected = (filterType: FilterType, value: string): boolean => {
                         ? 'border-[#3D92DE] bg-[#3D92DE]' 
                         : 'border-[#8F95B2]'
                     ]"
-                  >
-                    <Icon 
-                      v-if="isFilterSelected(option.type, option.value)"
-                      name="heroicons:check" 
-                      class="w-3 h-3 text-white m-auto"
-                    />
-                  </div>
+                  />
                 </button>
                 <button
                   @click="toggleFilter(option.type, option.value)"

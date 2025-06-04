@@ -12,6 +12,8 @@ defineEmits<{
   click: [asset: Asset]
 }>()
 
+const { handleDownload } = useSearch()
+
 // Track if we've already shown a fallback to prevent loops
 const hasFallback = ref(false)
 
@@ -28,22 +30,12 @@ const handleImageError = (event: Event) => {
 }
 
 const downloadAsset = () => {
-  // Implement download logic
-  console.log('Download asset:', props.asset.id)
+  handleDownload(props.asset)
 }
 
 const addToFavorites = () => {
   // Implement favorites logic
   console.log('Add to favorites:', props.asset.id)
-}
-
-const formatDownloadCount = (count: number): string => {
-  if (count >= 1000000) {
-    return `${(count / 1000000).toFixed(1)}M`
-  } else if (count >= 1000) {
-    return `${(count / 1000).toFixed(1)}K`
-  }
-  return count.toString()
 }
 </script>
 
@@ -55,7 +47,7 @@ const formatDownloadCount = (count: number): string => {
     <!-- Premium Badge -->
     <div
       v-if="asset.isPremium"
-      class="absolute top-3 right-3 z-20 bg-[#FFB800] text-white text-xs font-semibold px-2 py-1 rounded-full"
+      class="absolute top-3 left-3 z-20 bg-[#FFB800] text-white text-xs font-semibold px-2 py-1 rounded-full"
     >
       Premium
     </div>
@@ -85,55 +77,22 @@ const formatDownloadCount = (count: number): string => {
       />
       
       <!-- Hover Overlay -->
-      <div class="absolute inset-0 z-10 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
-        <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex gap-3 z-20">
+      <div class="absolute inset-0 z-10 bg-black/0 group-hover:bg-black/30 transition-all duration-300 w-full h-full">
+        <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex gap-3 z-20 relative w-full h-full">
           <button
-            class="bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white hover:scale-110 transition-all duration-200"
+            class="bg-white/90 backdrop-blur-sm cursor-pointer w-10 h-10 flex items-center justify-center rounded-lg shadow-lg hover:bg-white hover:scale-110 transition-all duration-200 absolute bottom-3 right-3"
             @click.stop="downloadAsset"
             :title="asset.isPremium ? 'Download Premium Asset' : 'Download Free Asset'"
           >
             <Icon name="heroicons:arrow-down-tray" class="w-5 h-5 text-[#636C7E]" />
           </button>
           <button
-            class="bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white hover:scale-110 transition-all duration-200"
+            class="bg-white/90 backdrop-blur-sm cursor-pointer w-10 h-10 flex items-center justify-center rounded-lg shadow-lg hover:bg-white hover:scale-110 transition-all duration-200 absolute top-3 right-3"
             @click.stop="addToFavorites"
             title="Add to Favorites"
           >
             <Icon name="heroicons:heart" class="w-5 h-5 text-[#636C7E]" />
           </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Asset Info -->
-    <div class="p-4">
-      <h3 class="font-averta text-sm font-medium text-[#2E334C] mb-1 line-clamp-2">
-        {{ asset.title }}
-      </h3>
-      <p v-if="asset.description" class="text-xs text-[#636C7E] mb-2 line-clamp-1">
-        {{ asset.description }}
-      </p>
-      
-      <!-- Tags -->
-      <div class="flex flex-wrap gap-1 mb-3">
-        <span
-          v-for="tag in asset.tags.slice(0, 3)"
-          :key="tag"
-          class="text-xs bg-[#E4E9F2] text-[#636C7E] px-2 py-1 rounded-full"
-        >
-          {{ tag }}
-        </span>
-      </div>
-
-      <!-- Asset Meta -->
-      <div class="flex items-center justify-between text-xs text-[#636C7E]">
-        <div class="flex items-center gap-1">
-          <Icon name="heroicons:user" class="w-3 h-3" />
-          <span>{{ asset.author }}</span>
-        </div>
-        <div class="flex items-center gap-1">
-          <Icon name="heroicons:arrow-down-tray" class="w-3 h-3" />
-          <span>{{ formatDownloadCount(asset.downloadCount) }}</span>
         </div>
       </div>
     </div>
