@@ -92,6 +92,8 @@ const transformAsset = (apiAsset: IconScoutAsset): Asset | null => {
 
 export const useSearch = () => {
   const config = useRuntimeConfig()
+  const route = useRoute()
+  const router = useRouter()
   
   // API Client Functions
   const createApiHeaders = (includeSecret = false) => {
@@ -189,7 +191,8 @@ export const useSearch = () => {
     return await response.json()
   }
 
-  const searchQuery = ref('')
+  // Initialize search query from URL or default
+  const searchQuery = ref((route.query.q as string) || '')
   const selectedFilters = ref<Filter[]>([])
   const currentCategory = ref('3D Illustrations')
   const isLoading = ref(false)
@@ -200,6 +203,31 @@ export const useSearch = () => {
     currentPage: 1,
     totalPages: 1,
     hasMore: false
+  })
+
+  // Update URL when search query changes
+  const updateUrl = (query: string) => {
+    const newQuery = { ...route.query }
+    
+    if (query.trim()) {
+      newQuery.q = query.trim()
+    } else {
+      delete newQuery.q
+    }
+    
+    // Only update if the query actually changed
+    if (newQuery.q !== route.query.q) {
+      router.push({ query: newQuery })
+    }
+  }
+
+  // Watch for route query changes and sync search query
+  watch(() => route.query.q, (newQuery) => {
+    const queryString = (newQuery as string) || ''
+    if (queryString !== searchQuery.value) {
+      searchQuery.value = queryString
+      performSearch()
+    }
   })
 
   const filters = ref<SearchFilters>({
@@ -364,6 +392,7 @@ export const useSearch = () => {
 
   const handleSearch = (query: string) => {
     searchQuery.value = query
+    updateUrl(query)
     performSearch()
   }
 

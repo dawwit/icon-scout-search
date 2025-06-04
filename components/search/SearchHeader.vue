@@ -1,13 +1,20 @@
 <script setup lang="ts">
 interface Props {
   onSearch?: (query: string) => void
+  searchQuery?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  onSearch: () => {}
+  onSearch: () => {},
+  searchQuery: ''
 })
 
 const searchInput = ref('')
+
+// Sync searchInput with the prop
+watch(() => props.searchQuery, (newQuery) => {
+  searchInput.value = newQuery
+}, { immediate: true })
 
 const handleSearch = () => {
   if (searchInput.value.trim()) {

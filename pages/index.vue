@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white overflow-hidden">
     <!-- Header -->
-    <SearchHeader :on-search="handleSearch" />
+    <SearchHeader :on-search="handleSearch" :search-query="searchQuery" />
 
     <!-- Error Message -->
     <div v-if="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded m-4">
@@ -96,6 +96,7 @@ import type { Asset } from '~/types/search'
 
 // Use the search composable
 const {
+  searchQuery,
   currentCategory,
   isLoading,
   error,
@@ -105,8 +106,7 @@ const {
   toggleFilterGroup,
   handleSearch,
   setCategory,
-  loadMore,
-  handleDownload
+  loadMore
 } = useSearch()
 
 // SEO Meta
@@ -144,7 +144,6 @@ const handleAssetClick = (asset: Asset) => {
 }
 
 const handleTagClick = (tag: string) => {
-  console.log('Tag clicked:', tag)
   handleSearch(tag)
 }
 </script>
