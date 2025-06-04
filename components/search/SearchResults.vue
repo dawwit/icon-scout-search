@@ -1,21 +1,19 @@
 <script setup lang="ts">
-import type { Asset, SearchResults } from '~/types/search'
+import type { Asset } from '~/types/search'
 import AssetCard from './AssetCard.vue'
 
 interface Props {
-  searchResults: SearchResults
-  isLoading: boolean
-  currentCategory: string
   onAssetClick?: (asset: Asset) => void
   onTagClick?: (tag: string) => void
-  onLoadMore?: () => void
 }
 
 const props = withDefaults(defineProps<Props>(), {
   onAssetClick: () => {},
-  onTagClick: () => {},
-  onLoadMore: () => {}
+  onTagClick: () => {}
 })
+
+// Use search composable directly
+const { searchResults, isLoading, loadMore } = useSearch()
 
 const popularTags = [
   'Conversation Design Assets',
@@ -36,7 +34,7 @@ const maxLoads = 2
 const assetsPerLoad = 15
 
 // Initialize displayed assets
-watch(() => props.searchResults.assets, (newAssets) => {
+watch(() => searchResults.value.assets, (newAssets) => {
   if (newAssets.length > 0) {
     displayedAssets.value = newAssets.slice(0, assetsPerLoad)
     loadCount.value = 1
@@ -48,12 +46,12 @@ watch(() => props.searchResults.assets, (newAssets) => {
 
 const canLoadMore = computed(() => {
   return loadCount.value < maxLoads && 
-         displayedAssets.value.length < props.searchResults.assets.length
+         displayedAssets.value.length < searchResults.value.assets.length
 })
 
 const shouldShowLoginPrompt = computed(() => {
   return loadCount.value >= maxLoads || 
-         (displayedAssets.value.length >= props.searchResults.assets.length && loadCount.value > 0)
+         (displayedAssets.value.length >= searchResults.value.assets.length && loadCount.value > 0)
 })
 
 const handleLoadMore = async () => {
@@ -65,8 +63,8 @@ const handleLoadMore = async () => {
   await new Promise(resolve => setTimeout(resolve, 500))
   
   const startIndex = displayedAssets.value.length
-  const endIndex = Math.min(startIndex + assetsPerLoad, props.searchResults.assets.length)
-  const newAssets = props.searchResults.assets.slice(startIndex, endIndex)
+  const endIndex = Math.min(startIndex + assetsPerLoad, searchResults.value.assets.length)
+  const newAssets = searchResults.value.assets.slice(startIndex, endIndex)
   
   displayedAssets.value.push(...newAssets)
   loadCount.value++
@@ -74,7 +72,16 @@ const handleLoadMore = async () => {
 }
 
 const handleAssetClick = (asset: Asset) => {
-  props.onAssetClick(asset)
+  props.onAssetClick?.(asset)
+}
+
+const handleTagClick = (tag: string) => {
+  props.onTagClick?.(tag)
+}
+
+const handleGetStarted = () => {
+  // This could trigger a modal or redirect to registration
+  loadMore()
 }
 </script>
 
@@ -88,7 +95,7 @@ const handleAssetClick = (asset: Asset) => {
         v-for="tag in popularTags"
         :key="tag"
         class="rounded border border-[#E4E9F2] border-solid px-3 py-2 bg-white hover:bg-gray-50 hover:border-[#3D92DE] transition-colors"
-        @click="onTagClick?.(tag)"
+        @click="handleTagClick(tag)"
       >
         {{ tag }}
       </button>
@@ -138,7 +145,7 @@ const handleAssetClick = (asset: Asset) => {
           <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <button
               class="bg-[#0092E4] text-white px-8 py-3 rounded-xl font-semibold hover:bg-[#007BC7] transition-colors text-lg min-w-[200px]"
-              @click="onLoadMore?.()"
+              @click="handleGetStarted"
             >
               Get Started - It's Free
             </button>

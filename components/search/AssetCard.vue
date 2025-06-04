@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Asset } from '~/types/search'
-import { ref } from 'vue'
 
 interface Props {
   asset: Asset
@@ -34,7 +33,7 @@ const downloadAsset = () => {
 }
 
 const addToFavorites = () => {
-  // Implement favorites logic
+  // Implement favorites logic when needed
 }
 </script>
 

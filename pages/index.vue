@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white overflow-hidden">
     <!-- Header -->
-    <SearchHeader :on-search="handleSearch" :search-query="searchQuery" />
+    <SearchHeader />
 
     <!-- Error Message -->
     <div v-if="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded m-4">
@@ -26,11 +26,7 @@
     <div class="flex w-full bg-[#FAFAFC] pb-10">
       <!-- Sidebar -->
       <div class="w-[262px] flex-shrink-0 mr-5">
-        <SearchFilters 
-          :selected-filters="selectedFilters"
-          :on-filter-change="updateFilter"
-          :on-toggle-filter-group="toggleFilterGroup"
-        />
+        <SearchFilters />
       </div>
 
       <!-- Main Content -->
@@ -49,12 +45,8 @@
           </button>
         </div>
         <SearchResults 
-          :search-results="searchResults"
-          :is-loading="isLoading"
-          :current-category="currentCategory"
           :on-asset-click="handleAssetClick"
           :on-tag-click="handleTagClick"
-          :on-load-more="loadMore"
         />
       </div>
     </div>
@@ -69,17 +61,14 @@ import type { Asset } from '~/types/search'
 import { FilterType } from '~/types/search'
 import { FILTER_OPTIONS } from '~/constants/filterOptions'
 
-// Use the search composable
+// Use the search composable directly
 const {
   searchQuery,
   selectedFilters,
-  isLoading,
   error,
   searchResults,
   updateFilter,
-  toggleFilterGroup,
-  handleSearch,
-  loadMore
+  handleSearch
 } = useSearch()
 
 const currentCategory = computed(() => {
@@ -113,10 +102,9 @@ useHead({
   ],
 })
 
-// Event handlers
+// Simplified event handlers
 const handleAssetClick = (_asset: Asset) => {
-  // You can add download functionality here if needed
-  // handleDownload(asset, 'svg')
+  // Asset click logic can be added here if needed
 }
 
 const handleTagClick = (tag: string) => {

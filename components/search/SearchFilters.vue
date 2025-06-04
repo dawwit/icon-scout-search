@@ -1,19 +1,11 @@
 <script setup lang="ts">
 import type { FilterType } from '~/types/search'
-import { FILTER_OPTIONS, type SelectedFilters } from '~/constants/filterOptions'
+import { FILTER_OPTIONS } from '~/constants/filterOptions'
 
-interface Props {
-  selectedFilters: SelectedFilters
-  onFilterChange?: (filterType: FilterType, value: string) => void
-  onToggleFilterGroup?: (groupId: string) => void
-}
+// Use the search composable directly
+const { selectedFilters, updateFilter } = useSearch()
 
-const props = withDefaults(defineProps<Props>(), {
-  onFilterChange: () => {},
-  onToggleFilterGroup: () => {}
-})
-
-// Track which filter groups are expanded
+// Track which filter groups are expanded (local UI state)
 const expandedGroups = ref<Record<string, boolean>>({
   assets: true,
   price: true,
@@ -22,16 +14,15 @@ const expandedGroups = ref<Record<string, boolean>>({
 })
 
 const toggleFilter = (filterType: FilterType, value: string) => {
-  props.onFilterChange(filterType, value)
+  updateFilter(filterType, value)
 }
 
 const toggleFilterGroup = (groupId: string) => {
   expandedGroups.value[groupId] = !expandedGroups.value[groupId]
-  props.onToggleFilterGroup(groupId)
 }
 
 const isFilterSelected = (filterType: FilterType, value: string): boolean => {
-  return props.selectedFilters[filterType] === value
+  return selectedFilters.value[filterType] === value
 }
 </script>
 

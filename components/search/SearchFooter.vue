@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Footer component logic can be added here
+// Footer component - no complex logic needed
 </script>
 
 <template>

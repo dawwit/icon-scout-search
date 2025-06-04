@@ -1,31 +1,23 @@
 <script setup lang="ts">
-interface Props {
-  onSearch?: (query: string) => void
-  searchQuery?: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  onSearch: () => {},
-  searchQuery: ''
-})
+const { searchQuery, handleSearch } = useSearch()
 
 const searchInput = ref('')
 
-// Sync searchInput with the prop
-watch(() => props.searchQuery, (newQuery) => {
+// Sync searchInput with the composable's searchQuery
+watch(() => searchQuery.value, (newQuery) => {
   searchInput.value = newQuery
 }, { immediate: true })
 
-const handleSearch = () => {
+const performSearch = () => {
   if (searchInput.value.trim()) {
-    props.onSearch(searchInput.value.trim())
+    handleSearch(searchInput.value.trim())
   }
 }
 
-// Watch for changes and emit search
+// Clear search when input is empty
 watch(searchInput, (newValue) => {
   if (newValue.length === 0) {
-    props.onSearch('')
+    handleSearch('')
   }
 })
 </script>
@@ -65,12 +57,12 @@ watch(searchInput, (newValue) => {
               type="text"
               placeholder="Search from 8 Million+ assets"
               class="text-[#2E334C] text-sm font-normal leading-6 bg-transparent border-none outline-none my-auto flex-1"
-              @keyup.enter="handleSearch"
+              @keyup.enter="performSearch"
             >
           </div>
           <button
             class="rounded bg-[#FAFAFC] my-auto min-h-[30px] p-1.5 w-[30px] h-[30px] flex items-center justify-center hover:bg-gray-200 transition-colors"
-            @click="handleSearch"
+            @click="performSearch"
           >
             <Icon name="heroicons:magnifying-glass" class="w-4 h-4 text-[#636C7E]" />
           </button>
