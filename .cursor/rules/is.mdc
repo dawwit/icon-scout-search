@@ -1,0 +1,50 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Overview
+This is a project doc of implementation of IconScout search API. This project is meant to be very straight-forward. It's rather an exercise and it includes only basic functionality. 
+
+# Stack
+Nuxt 3 + shadcn/nuxt + tailwind
+
+# Key results
+The outcome needs to be: 
+- visually appealing:
+- straightforward in implementation;
+- optimized for the end-user experience;
+- performant and utilizing SSR techniques;
+- SEO optimized;
+- implementing basic principles of WCAG.  
+
+## Architecture & Structure
+- The project must use Nuxt 3 and leverage its SSR capabilities to the fullest.
+- It should be following architectural and design patterns.
+
+## Code Quality
+- All code must be written in TypeScript, with strict type safety enforced.
+- Naming conventions must be clear, descriptive, and consistent across the codebase.
+- Anti-patterns (such as God objects, tight coupling, or logic in views/components) must be avoided.
+- All business logic and data transformations must be implemented as pure functions where possible.
+- All code should be easily understandable and maintainable by other developers.
+- When doing changes make sure that the necessary imports are removed.
+- Vue components should use script setup SFC and follow script template style pattern.
+
+## Dependencies
+- Dependencies must be chosen for quality, maintainability, and alignment with Nuxt 3 best practices.
+- It should use mature dependencies.
+- It should use minimal amount of dependencies.
+- For form validation it should use ZOD for JSON schema validation.
+
+## Testing
+- All pure functions should be covered with unit tests with vitest.
+- Business logic should be covered with end-to-end tests with playwright.
+- The test cases should be written before functionalities and they should cover only the business logic.
+- The implementation should be test driven.
+
+## Development Process
+- For commits follow the conventional commits pattern.
+- This project is meant to be at staff front-end developer level. So after making changes, review the changes and validate their quality.
+- Every tech decision should be documented in README.
+
