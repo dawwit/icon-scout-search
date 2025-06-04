@@ -2,15 +2,8 @@ export interface Asset {
   id: string
   uuid: string
   title: string
-  description?: string
   imageUrl: string
   isPremium: boolean
-  tags: string[]
-  category: AssetCategory
-  type: AssetType
-  createdAt: Date
-  author: string
-  downloadCount: number
   format: 'image' | 'video'
 }
 
@@ -37,7 +30,5 @@ export interface SearchResults {
 export enum FilterType {
   ASSET = 'asset',
   PRICE = 'price',
-  VIEW = 'view',
-  SORT = 'sort',
-  CATEGORY = 'category'
+  SORT = 'sort'
 } 

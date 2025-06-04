@@ -33,14 +33,6 @@ export const FILTER_OPTIONS: Record<string, FilterGroupOption> = {
       { name: 'All', value: 'all', type: FilterType.PRICE }
     ]
   },
-  view: {
-    name: 'View',
-    type: FilterType.VIEW,
-    options: [
-      { name: 'Pack', value: 'pack', type: FilterType.VIEW },
-      { name: 'Individual', value: 'individual', type: FilterType.VIEW }
-    ]
-  },
   sortBy: {
     name: 'Sort by',
     type: FilterType.SORT,
@@ -57,7 +49,5 @@ export const FILTER_OPTIONS: Record<string, FilterGroupOption> = {
 export type SelectedFilters = {
   [FilterType.ASSET]?: string
   [FilterType.PRICE]?: string
-  [FilterType.VIEW]?: string
   [FilterType.SORT]?: string
-  [FilterType.CATEGORY]?: string
 } 
