@@ -13,6 +13,18 @@ export default defineNuxtConfig({
     '@vueuse/nuxt'
   ],
 
+  // Runtime configuration for environment variables
+  runtimeConfig: {
+    // Private keys (only available on server-side)
+    iconscoutClientSecret: process.env.ICONSCOUT_CLIENT_SECRET,
+    
+    // Public keys (exposed to client-side)
+    public: {
+      iconscoutClientId: process.env.ICONSCOUT_CLIENT_ID,
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    }
+  },
+
   // TypeScript configuration
   typescript: {
     strict: true,

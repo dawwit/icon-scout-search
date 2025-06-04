@@ -10,7 +10,7 @@ interface Props {
   onLoadMore?: () => void
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   onAssetClick: () => {},
   onTagClick: () => {},
   onLoadMore: () => {}

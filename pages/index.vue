@@ -3,16 +3,22 @@
     <!-- Header -->
     <SearchHeader :on-search="handleSearch" />
 
+    <!-- Error Message -->
+    <div v-if="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded m-4">
+      <strong class="font-bold">Error:</strong>
+      <span class="block sm:inline"> {{ error }}</span>
+    </div>
+
     <!-- Main Content Area -->
     <div
       class="bg-[#FAFAFC] flex mt-1.5 w-full px-10 lg:px-5 pt-6 pb-px flex-col overflow-hidden items-start font-averta text-sm lg:max-w-full"
     >
       <!-- Page Title and Description -->
       <div class="text-black text-[35px] font-bold">
-        {{ searchResults.total }} Limit 3D Illustrations
+        {{ searchResults.total }} {{ currentCategory }}
       </div>
       <div class="text-[#5A607D] font-normal mt-1">
-        {{ searchResults.total }} 3Ds exclusively selected by our designer community.
+        {{ searchResults.total }} assets exclusively selected by our designer community.
       </div>
 
       <!-- Category Tabs -->
@@ -20,7 +26,7 @@
         class="flex mt-10 ml-[262px] items-stretch gap-6 text-[#2F72BC] font-semibold flex-wrap"
       >
         <button
-          class="flex-grow hover:text-black transition-colors"
+          :class="['flex-grow hover:text-black transition-colors', currentCategory === 'All Assets' ? 'text-black border-b-2 border-black' : '']"
           @click="setCategory('All Assets')"
         >
           All Assets
@@ -32,19 +38,19 @@
           3D Illustrations
         </button>
         <button
-          class="flex-auto hover:text-black transition-colors"
+          :class="['flex-auto hover:text-black transition-colors', currentCategory === 'Lottie Animations' ? 'text-black border-b-2 border-black' : '']"
           @click="setCategory('Lottie Animations')"
         >
           Lottie Animations
         </button>
         <button
-          class="hover:text-black transition-colors"
+          :class="['hover:text-black transition-colors', currentCategory === 'Illustrations' ? 'text-black border-b-2 border-black' : '']"
           @click="setCategory('Illustrations')"
         >
           Illustrations
         </button>
         <button
-          class="hover:text-black transition-colors"
+          :class="['hover:text-black transition-colors', currentCategory === 'Icons' ? 'text-black border-b-2 border-black' : '']"
           @click="setCategory('Icons')"
         >
           Icons
@@ -75,7 +81,7 @@
           :current-category="currentCategory"
           :on-asset-click="handleAssetClick"
           :on-tag-click="handleTagClick"
-          :on-load-more="handleLoadMore"
+          :on-load-more="loadMore"
         />
       </div>
     </div>
@@ -92,32 +98,35 @@ import type { Asset } from '~/types/search'
 const {
   currentCategory,
   isLoading,
+  error,
   searchResults,
   filters,
   toggleFilter,
   toggleFilterGroup,
   handleSearch,
-  setCategory
+  setCategory,
+  loadMore,
+  handleDownload
 } = useSearch()
 
 // SEO Meta
 useHead({
-  title: computed(() => `${searchResults.value.total} Limit 3D Illustrations - IconScout Search`),
+  title: computed(() => `${searchResults.value.total} ${currentCategory.value} - IconScout Search`),
   meta: [
     {
       name: "description",
       content: computed(() => 
-        `${searchResults.value.total} 3Ds exclusively selected by our designer community. Search and discover premium 3D illustrations, icons, and design assets.`
+        `${searchResults.value.total} ${currentCategory.value.toLowerCase()} exclusively selected by our designer community. Search and discover premium design assets.`
       ),
     },
     {
       property: "og:title",
-      content: computed(() => `${searchResults.value.total} Limit 3D Illustrations - IconScout Search`),
+      content: computed(() => `${searchResults.value.total} ${currentCategory.value} - IconScout Search`),
     },
     {
       property: "og:description",
       content: computed(() => 
-        `${searchResults.value.total} 3Ds exclusively selected by our designer community. Search and discover premium 3D illustrations, icons, and design assets.`
+        `${searchResults.value.total} ${currentCategory.value.toLowerCase()} exclusively selected by our designer community. Search and discover premium design assets.`
       ),
     },
     {
@@ -130,17 +139,13 @@ useHead({
 // Event handlers
 const handleAssetClick = (asset: Asset) => {
   console.log('Asset clicked:', asset)
-  // Navigate to asset detail page or open modal
+  // You can add download functionality here
+  // handleDownload(asset, 'svg')
 }
 
 const handleTagClick = (tag: string) => {
   console.log('Tag clicked:', tag)
   handleSearch(tag)
-}
-
-const handleLoadMore = () => {
-  console.log('Load more clicked')
-  // Implement pagination logic
 }
 </script>
 

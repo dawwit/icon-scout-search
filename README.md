@@ -10,6 +10,7 @@ A modern, performant icon search application built with Nuxt 3, implementing the
 - **Testing** - Unit tests with Vitest and E2E tests with Playwright
 - **Accessibility** - WCAG compliant design principles
 - **Performance** - Optimized for Core Web Vitals
+- **Real API Integration** - Uses IconScout REST API v3
 
 ## 🛠 Tech Stack
 
@@ -19,12 +20,42 @@ A modern, performant icon search application built with Nuxt 3, implementing the
 - **Testing**: Vitest (unit) + Playwright (E2E)
 - **Validation**: Zod
 - **Linting**: ESLint
+- **API**: IconScout REST API v3
+
+## 🔑 API Setup
+
+This application uses the IconScout REST API v3. To get started:
+
+1. **Get API Credentials**:
+   - Sign up at [IconScout](https://iconscout.com)
+   - Navigate to [API settings](https://iconscout.com/api)
+   - Generate your Client ID and Client Secret
+
+2. **Environment Variables**:
+   Create a `.env` file in the root directory:
+   ```bash
+   # Required for search functionality
+   ICONSCOUT_CLIENT_ID=your_client_id_here
+   
+   # Required for download functionality (optional)
+   ICONSCOUT_CLIENT_SECRET=your_client_secret_here
+   ```
+
+3. **API Features**:
+   - **Search**: Browse 8.5M+ icons, illustrations, and 3D assets
+   - **Filtering**: By category, style, price, and more
+   - **Download**: Direct download with proper authentication
+   - **Real-time**: Live search with debouncing and caching
 
 ## 📦 Installation
 
 ```bash
 # Install dependencies
 npm install
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your IconScout API credentials
 
 # Start development server
 npm run dev
@@ -67,7 +98,10 @@ npm run lint:fix
 ```
 ├── assets/css/          # Global styles and CSS variables
 ├── components/          # Vue components
+│   ├── search/         # Search-related components
 │   └── ui/             # shadcn/nuxt UI components
+├── composables/         # Vue composables (including useSearch)
+├── docs/               # Documentation and API reference
 ├── pages/              # Nuxt pages (file-based routing)
 ├── tests/              # Test files
 │   ├── unit/          # Unit tests
@@ -83,6 +117,12 @@ npm run lint:fix
 - **Component composition** following Vue 3 best practices
 - **Pure functions** for business logic to ensure testability
 - **Separation of concerns** between UI, logic, and data layers
+
+### API Integration
+- **Real IconScout API** integration with proper error handling
+- **Environment-based configuration** for secure credential management
+- **Response transformation** to maintain consistent internal types
+- **Caching and optimization** for better performance
 
 ### Performance
 - **SSR by default** for optimal initial page load
