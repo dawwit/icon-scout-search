@@ -51,7 +51,6 @@ watch(searchInput, (newValue) => {
             <div
               class="border-[#B4BAD6] border border-solid bg-[#B4BAD6] my-auto w-0 flex-shrink-0 h-7"
             />
-            <Icon name="heroicons:magnifying-glass" class="w-5 h-5 text-[#636C7E]" />
             <input
               v-model="searchInput"
               type="text"

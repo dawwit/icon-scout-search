@@ -54,6 +54,8 @@ export default defineEventHandler(async (event) => {
       'Content-Type': 'application/json'
     }
 
+    console.log(`Requesting download for asset ${uuid} with format ${format}`)
+
     // Make request to IconScout API
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -62,6 +64,9 @@ export default defineEventHandler(async (event) => {
     })
 
     if (!response.ok) {
+      const errorText = await response.text()
+      console.error('IconScout API error:', response.status, errorText)
+      
       // Handle specific error cases
       if (response.status === 401) {
         throw createError({
@@ -81,12 +86,14 @@ export default defineEventHandler(async (event) => {
       } else {
         throw createError({
           statusCode: response.status,
-          statusMessage: `Download failed: ${response.statusText}`
+          statusMessage: `Download failed: ${response.statusText} ${errorText}`,
         })
       }
     }
 
     const downloadData: IconScoutDownloadResponse = await response.json()
+
+    console.log('Download URL generated successfully for asset:', uuid)
 
     // Return download information
     return {
@@ -98,6 +105,8 @@ export default defineEventHandler(async (event) => {
     }
 
   } catch (error) {
+    console.error('Download API error:', error)
+    
     // If it's already a createError, just throw it
     if (error && typeof error === 'object' && 'statusCode' in error) {
       throw error
