@@ -45,7 +45,7 @@ watch(searchInput, (newValue) => {
             src="/logo-iconscout.svg"
             alt="IconScout Logo"
             class="aspect-[5.32] object-contain object-center w-[170px] my-auto flex-shrink-0"
-          />
+          >
         </NuxtLink>
 
         <!-- Search Bar -->
@@ -66,11 +66,11 @@ watch(searchInput, (newValue) => {
               placeholder="Search from 8 Million+ assets"
               class="text-[#2E334C] text-sm font-normal leading-6 bg-transparent border-none outline-none my-auto flex-1"
               @keyup.enter="handleSearch"
-            />
+            >
           </div>
           <button
-            @click="handleSearch"
             class="rounded bg-[#FAFAFC] my-auto min-h-[30px] p-1.5 w-[30px] h-[30px] flex items-center justify-center hover:bg-gray-200 transition-colors"
+            @click="handleSearch"
           >
             <Icon name="heroicons:magnifying-glass" class="w-4 h-4 text-[#636C7E]" />
           </button>
@@ -92,12 +92,9 @@ watch(searchInput, (newValue) => {
             <span class="text-[#2E334D]">Tools</span>
             <Icon name="heroicons:chevron-down" class="w-4 h-4 ml-1" />
           </div>
-          <NuxtLink 
-            to="/features" 
-            class="text-[#2E334D] hover:text-[#0092E4] transition-colors"
-          >
+          <span class="text-[#2E334D] hover:text-[#0092E4] transition-colors cursor-pointer">
             All Features
-          </NuxtLink>
+          </span>
           <div class="flex items-center justify-start cursor-pointer hover:text-[#0092E4] transition-colors">
             <Icon name="heroicons:gift" class="w-3 h-3 mr-2 text-[#0092E4]" />
             <span class="text-[#2E334D] my-auto">Free Asset</span>

@@ -20,8 +20,7 @@
       <div class="text-[#5A607D] font-normal mt-1">
         {{ searchResults.total }} assets exclusively selected by our designer community.
       </div>
-
-     
+    </div>
 
     <!-- Main Layout Container -->
     <div class="flex w-full bg-[#FAFAFC] pb-10">
@@ -36,18 +35,18 @@
 
       <!-- Main Content -->
       <div class="flex-1 min-w-0">
-         <!-- Category Tabs -->
-          <div
-            class="flex mt-10 items-stretch gap-6 text-[#2F72BC] font-semibold flex-wrap"
+        <!-- Category Tabs -->
+        <div
+          class="flex mt-10 items-stretch gap-6 text-[#2F72BC] font-semibold flex-wrap"
+        >
+          <button
+            v-for="option in FILTER_OPTIONS.assets.options"
+            :key="option.value"
+            :class="['cursor-pointer hover:text-black transition-colors', selectedFilters[FilterType.ASSET] === option.value ? 'text-black border-b-2 border-black' : '']"
+            @click="updateFilter(FilterType.ASSET, option.value)"
           >
-            <button
-              v-for="option in FILTER_OPTIONS.assets.options"
-              :key="option.value"
-              :class="['cursor-pointer hover:text-black transition-colors', selectedFilters[FilterType.ASSET] === option.value ? 'text-black border-b-2 border-black' : '']"
-              @click="updateFilter(FilterType.ASSET, option.value)"
-            >
-              {{ option.name }}
-            </button>
+            {{ option.name }}
+          </button>
         </div>
         <SearchResults 
           :search-results="searchResults"
@@ -57,7 +56,6 @@
           :on-tag-click="handleTagClick"
           :on-load-more="loadMore"
         />
-        </div>
       </div>
     </div>
 
@@ -116,9 +114,8 @@ useHead({
 })
 
 // Event handlers
-const handleAssetClick = (asset: Asset) => {
-  console.log('Asset clicked:', asset)
-  // You can add download functionality here
+const handleAssetClick = (_asset: Asset) => {
+  // You can add download functionality here if needed
   // handleDownload(asset, 'svg')
 }
 

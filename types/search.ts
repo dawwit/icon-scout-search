@@ -1,29 +1,3 @@
-export interface SearchFilter {
-  id: string;
-  label: string;
-  selected: boolean;
-}
-
-export interface SearchCategory {
-  id: string;
-  name: string;
-  active: boolean;
-}
-
-export interface SearchAsset {
-  id: string;
-  src: string;
-  title?: string;
-  aspectRatio: string;
-  padding?: string;
-}
-
-export interface NavigationItem {
-  label: string;
-  hasDropdown?: boolean;
-  href?: string;
-}
-
 export interface Asset {
   id: string
   uuid: string
@@ -52,38 +26,6 @@ export interface AssetType {
   slug: string
 }
 
-export interface Filter {
-  id: string
-  name: string
-  value: string
-  type: FilterType
-  selected: boolean
-}
-
-export interface FilterGroup {
-  id: string
-  name: string
-  type: FilterType
-  filters: Filter[]
-  expanded: boolean
-}
-
-export interface SearchFilters {
-  assets: FilterGroup
-  price: FilterGroup
-  view: FilterGroup
-  sortBy: FilterGroup
-}
-
-export interface SearchQuery {
-  query: string
-  filters: Filter[]
-  category: string
-  sortBy: string
-  page: number
-  limit: number
-}
-
 export interface SearchResults {
   assets: Asset[]
   total: number
@@ -98,21 +40,4 @@ export enum FilterType {
   VIEW = 'view',
   SORT = 'sort',
   CATEGORY = 'category'
-}
-
-export enum SortOption {
-  POPULAR = 'popular',
-  LATEST = 'latest',
-  FEATURED = 'featured'
-}
-
-export enum ViewOption {
-  PACK = 'pack',
-  INDIVIDUAL = 'individual'
-}
-
-export enum PriceOption {
-  FREE = 'free',
-  PREMIUM = 'premium',
-  ALL = 'all'
-}
+} 

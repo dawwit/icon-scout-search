@@ -35,7 +35,6 @@ const downloadAsset = () => {
 
 const addToFavorites = () => {
   // Implement favorites logic
-  console.log('Add to favorites:', props.asset.id)
 }
 </script>
 
@@ -74,22 +73,22 @@ const addToFavorites = () => {
         :alt="asset.title"
         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
         @error="handleImageError"
-      />
+      >
       
       <!-- Hover Overlay -->
       <div class="absolute inset-0 z-10 bg-black/0 group-hover:bg-black/30 transition-all duration-300 w-full h-full">
         <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex gap-3 z-20 relative w-full h-full">
           <button
             class="bg-white/90 backdrop-blur-sm cursor-pointer w-10 h-10 flex items-center justify-center rounded-lg shadow-lg hover:bg-white hover:scale-110 transition-all duration-200 absolute bottom-3 right-3"
-            @click.stop="downloadAsset"
             :title="asset.isPremium ? 'Download Premium Asset' : 'Download Free Asset'"
+            @click.stop="downloadAsset"
           >
             <Icon name="heroicons:arrow-down-tray" class="w-5 h-5 text-[#636C7E]" />
           </button>
           <button
             class="bg-white/90 backdrop-blur-sm cursor-pointer w-10 h-10 flex items-center justify-center rounded-lg shadow-lg hover:bg-white hover:scale-110 transition-all duration-200 absolute top-3 right-3"
-            @click.stop="addToFavorites"
             title="Add to Favorites"
+            @click.stop="addToFavorites"
           >
             <Icon name="heroicons:heart" class="w-5 h-5 text-[#636C7E]" />
           </button>

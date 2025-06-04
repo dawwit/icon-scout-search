@@ -57,7 +57,7 @@ const isFilterSelected = (filterType: FilterType, value: string): boolean => {
         </div>
         <div
           class="border-[#EBEDF5] border border-solid bg-[#EBEDF5] mt-3 flex-shrink-0 h-px"
-        ></div>
+        />
       </div>
 
       <!-- Iconscout Exclusive Toggle -->
@@ -77,7 +77,7 @@ const isFilterSelected = (filterType: FilterType, value: string): boolean => {
       </div>
       <div
         class="border-[#EBEDF5] border border-solid bg-[#EBEDF5] flex-shrink-0 h-px"
-      ></div>
+      />
 
       <!-- Dynamic Filter Groups -->
       <div 
@@ -87,8 +87,8 @@ const isFilterSelected = (filterType: FilterType, value: string): boolean => {
       >
         <div class="flex w-full px-6 lg:px-5 pt-4 flex-col items-stretch">
           <button
-            @click="toggleFilterGroup(groupKey)"
             class="flex items-stretch gap-5 font-averta text-sm text-[#1C2033] font-semibold whitespace-nowrap justify-between lg:whitespace-normal hover:bg-gray-50 -mx-2 px-2 py-1 rounded transition-colors"
+            @click="toggleFilterGroup(groupKey)"
           >
             <div class="text-[#1C2033] my-auto">{{ group.name }}</div>
             <Icon 
@@ -105,8 +105,8 @@ const isFilterSelected = (filterType: FilterType, value: string): boolean => {
                 class="flex items-center gap-2 justify-start mb-2 last:mb-0"
               >
                 <button
-                  @click="toggleFilter(option.type, option.value)"
                   class="bg-white flex px-1 flex-col overflow-hidden items-center justify-center w-6 h-6 hover:bg-gray-50 transition-colors"
+                  @click="toggleFilter(option.type, option.value)"
                 >
                   <div
                     :class="[
@@ -118,8 +118,8 @@ const isFilterSelected = (filterType: FilterType, value: string): boolean => {
                   />
                 </button>
                 <button
-                  @click="toggleFilter(option.type, option.value)"
                   class="text-[#2E334C] font-averta text-sm font-normal hover:text-[#0092E4] transition-colors"
+                  @click="toggleFilter(option.type, option.value)"
                 >
                   {{ option.name }}
                 </button>
@@ -129,7 +129,7 @@ const isFilterSelected = (filterType: FilterType, value: string): boolean => {
         </div>
         <div
           class="border-[#EBEDF5] border border-solid bg-[#EBEDF5] mt-5 flex-shrink-0 h-px"
-        ></div>
+        />
       </div>
     </div>
   </aside>

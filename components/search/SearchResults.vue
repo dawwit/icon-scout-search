@@ -96,7 +96,7 @@ const handleAssetClick = (asset: Asset) => {
 
     <!-- Loading State -->
     <div v-if="isLoading" class="flex justify-center items-center py-12">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0092E4]"></div>
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0092E4]"/>
       <span class="ml-3 text-[#636C7E]">Loading assets...</span>
     </div>
 
@@ -119,7 +119,7 @@ const handleAssetClick = (asset: Asset) => {
           class="bg-[#0092E4] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#007BC7] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 mx-auto"
           @click="handleLoadMore"
         >
-          <div v-if="isLazyLoading" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+          <div v-if="isLazyLoading" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"/>
           {{ isLazyLoading ? 'Loading...' : 'Load More Assets' }}
         </button>
     

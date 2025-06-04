@@ -13,10 +13,10 @@
           class="flex min-w-60 my-auto items-center gap-4 font-averta justify-start"
         >
           <img
-            src="https://cdn.builder.io/api/v1/image/assets/TEMP/248c0c7e711626047efa3d2c8c9a3d46e9fd5e74?placeholderIfAbsent=true"
+            src="/logo-iconscout.svg"
             alt="IconScout Logo"
             class="aspect-[5.13] object-contain object-center w-[185px] my-auto flex-shrink-0"
-          />
+          >
           <div class="my-auto">Design Resource Marketplace</div>
         </div>
         <div class="font-karla my-auto">
@@ -28,7 +28,7 @@
       <!-- Divider -->
       <div
         class="border-[#D8DBEB] border border-solid bg-[#D8DBEB] min-h-0 mt-6 w-[1100px] max-w-full"
-      ></div>
+      />
 
       <!-- Links Section -->
       <div
@@ -97,38 +97,19 @@
         <div class="flex min-w-60 flex-col items-start justify-start">
           <div class="font-averta text-sm text-[#2E334C] font-bold leading-6">
             <div class="text-[#2E334C]">Get IconScout for desktop</div>
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/86e1d7ee4299f5e15b0304c2a8507ec17cb435e1?placeholderIfAbsent=true"
-              alt="Download app"
-              class="aspect-[2.35] object-contain object-center w-[94px] mt-3"
-            />
+            <div class="mt-3 text-[#424866] text-sm">Download available on desktop</div>
           </div>
           <div class="self-stretch mt-6">
             <div class="text-[#2E334C] font-averta text-sm font-bold leading-6">
               Get LottieFiles mobile app
             </div>
-            <div class="flex mt-3 items-start gap-3 justify-start">
-              <div
-                class="rounded-lg border border-[#BFC8D1] border-solid flex w-[120px] flex-shrink-0 h-10"
-              ></div>
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/8571dd17c6dc6fbb27e8e3195e23b669f6e82676?placeholderIfAbsent=true"
-                alt="Google Play Store"
-                class="aspect-[3.25] object-contain object-center w-[130px] flex-shrink-0"
-              />
-            </div>
+            <div class="mt-3 text-[#424866] text-sm">Available on mobile platforms</div>
           </div>
           <div class="mt-6 min-h-[69px] w-[241px] max-w-full">
             <div class="text-[#424866] font-averta text-sm font-bold leading-6">
               Follow us
             </div>
-            <div class="flex mt-3 h-8 w-full items-start gap-3 justify-start">
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/f2ec364fb54b174949f3a73d296af9088056c1d4?placeholderIfAbsent=true"
-                alt="Social media icons"
-                class="aspect-[6.02] object-contain object-center w-[241px] min-w-60"
-              />
-            </div>
+            <div class="mt-3 text-[#424866] text-sm">Connect with us on social media</div>
           </div>
         </div>
       </div>
@@ -144,30 +125,17 @@
             class="flex min-w-60 my-auto py-1 flex-col items-stretch font-normal w-[290px]"
           >
             <div class="text-[#424866]">
-              © 2021 Design Barn Inc. Made with in India
+              © 2021 Design Barn Inc. Made with ❤️ in India
             </div>
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/b5d556cd34257a30578dbd643380a76ceaafa399?placeholderIfAbsent=true"
-              alt="Heart icon"
-              class="aspect-[1.14] object-contain object-center w-4 self-end z-10 -mt-5 mr-14 lg:mr-2.5"
-            />
           </div>
           <div
             class="flex my-auto items-center gap-6 italic font-extralight justify-start"
           >
             <div class="flex my-auto items-start gap-1 justify-start">
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/fd5b9a3f7c46b63b297a2533e350cc969e75117f?placeholderIfAbsent=true"
-                alt="Security icon"
-                class="aspect-square object-contain object-center w-6 flex-shrink-0"
-              />
+              <Icon name="heroicons:shield-check" class="w-6 h-6 text-green-500" />
               <div class="text-[#424866]">Secure Payments</div>
             </div>
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/8533ab85afcd45128d201ae7c9b3d8a11243c0e8?placeholderIfAbsent=true"
-              alt="Payment methods"
-              class="aspect-[2.1] object-contain object-center w-21 my-auto flex-shrink-0"
-            />
+            <div class="text-[#424866] text-sm">Payment methods accepted</div>
           </div>
         </div>
       </div>
@@ -176,4 +144,21 @@
 </template>
 
 <style scoped>
+.font-averta {
+  font-family:
+    "Averta Std",
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+}
+
+.font-karla {
+  font-family:
+    "Karla",
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+}
 </style>

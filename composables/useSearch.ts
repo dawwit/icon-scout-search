@@ -67,7 +67,6 @@ interface DownloadResponse {
 const transformAsset = (apiAsset: IconScoutAsset): Asset | null => {
   // Check if apiAsset has required properties
   if (!apiAsset || !apiAsset.id || !apiAsset.name) {
-    console.warn('Invalid asset data - missing required fields:', apiAsset)
     return null
   }
 
@@ -113,8 +112,7 @@ const transformAsset = (apiAsset: IconScoutAsset): Asset | null => {
       downloadCount: apiAsset.download_count || 0,
       format
     }
-  } catch (err) {
-    console.error('Error transforming asset:', err, apiAsset)
+  } catch {
     return null
   }
 }
@@ -158,9 +156,6 @@ export const useSearch = () => {
 
     const url = `${API_BASE_URL}/search?${searchParams.toString()}`
     
-    console.log('Making API request to:', url)
-    console.log('Headers:', createApiHeaders())
-    
     try {
       const response = await fetch(url, {
         method: 'GET',
@@ -169,14 +164,12 @@ export const useSearch = () => {
 
       if (!response.ok) {
         const errorText = await response.text()
-        console.error('API Error Response:', errorText)
         throw new Error(`API request failed: ${response.status} ${response.statusText} - ${errorText}`)
       }
 
       const data = await response.json()
       return data
-    } catch (error) {
-      console.error('Search API error:', error)
+    } catch {
       // Return empty results on error
       return {
         response: {
@@ -264,7 +257,6 @@ export const useSearch = () => {
   const performSearch = async (page = 1) => {
     // Prevent multiple simultaneous searches
     if (isLoading.value) {
-      console.log('Search already in progress, skipping...')
       return
     }
     
@@ -279,12 +271,6 @@ export const useSearch = () => {
       }
       return
     }
-
-    console.log(`Starting search - page: ${page}, filters:`, {
-      asset: selectedFilters.value[FilterType.ASSET],
-      price: selectedFilters.value[FilterType.PRICE],
-      sort: selectedFilters.value[FilterType.SORT]
-    })
 
     isLoading.value = true
     error.value = null
@@ -306,12 +292,8 @@ export const useSearch = () => {
 
       const response = await searchAssets(searchParams)
       
-      // Debug log to see the actual response structure
-      console.log('API Response:', response)
-      
       // Check if response has the expected structure
       if (!response || !response.response || !response.response.items || !response.response.items.data) {
-        console.error('Unexpected API response structure:', response)
         searchResults.value = {
           assets: [],
           total: 0,
@@ -340,7 +322,6 @@ export const useSearch = () => {
       }
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'An error occurred while searching'
-      console.error('Search error:', err)
     } finally {
       isLoading.value = false
     }
@@ -379,14 +360,11 @@ export const useSearch = () => {
       if (!response.success) {
         throw new Error('Download request failed')
       }
-
-      console.log('Download URL generated successfully:', response.download_url)
       
       // Open download URL in new tab
       window.open(response.download_url, '_blank')
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Download failed'
-      console.error('Download error:', err)
     }
   }
 
