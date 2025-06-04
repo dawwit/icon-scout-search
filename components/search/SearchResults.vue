@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Asset, SearchResults } from '~/types/search'
+import AssetCard from './AssetCard.vue'
 
 interface Props {
   searchResults: SearchResults
@@ -10,7 +11,7 @@ interface Props {
   onLoadMore?: () => void
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   onAssetClick: () => {},
   onTagClick: () => {},
   onLoadMore: () => {}
@@ -27,9 +28,53 @@ const popularTags = [
   'Mobile app icons'
 ]
 
-const handleImageError = (event: Event) => {
-  const target = event.target as HTMLImageElement
-  target.src = 'https://via.placeholder.com/280x200/f0f0f0/999999?text=No+Image'
+// Lazy loading state
+const displayedAssets = ref<Asset[]>([])
+const loadCount = ref(0)
+const isLazyLoading = ref(false)
+const maxLoads = 2
+const assetsPerLoad = 15
+
+// Initialize displayed assets
+watch(() => props.searchResults.assets, (newAssets) => {
+  if (newAssets.length > 0) {
+    displayedAssets.value = newAssets.slice(0, assetsPerLoad)
+    loadCount.value = 1
+  } else {
+    displayedAssets.value = []
+    loadCount.value = 0
+  }
+}, { immediate: true })
+
+const canLoadMore = computed(() => {
+  return loadCount.value < maxLoads && 
+         displayedAssets.value.length < props.searchResults.assets.length
+})
+
+const shouldShowLoginPrompt = computed(() => {
+  return loadCount.value >= maxLoads || 
+         (displayedAssets.value.length >= props.searchResults.assets.length && loadCount.value > 0)
+})
+
+const handleLoadMore = async () => {
+  if (!canLoadMore.value || isLazyLoading.value) return
+  
+  isLazyLoading.value = true
+  
+  // Simulate loading delay for better UX
+  await new Promise(resolve => setTimeout(resolve, 500))
+  
+  const startIndex = displayedAssets.value.length
+  const endIndex = Math.min(startIndex + assetsPerLoad, props.searchResults.assets.length)
+  const newAssets = props.searchResults.assets.slice(startIndex, endIndex)
+  
+  displayedAssets.value.push(...newAssets)
+  loadCount.value++
+  isLazyLoading.value = false
+}
+
+const handleAssetClick = (asset: Asset) => {
+  props.onAssetClick(asset)
 }
 </script>
 
@@ -55,76 +100,66 @@ const handleImageError = (event: Event) => {
       <span class="ml-3 text-[#636C7E]">Loading assets...</span>
     </div>
 
-    <!-- Results Grid - Original IconScout Style -->
-    <div v-else-if="searchResults.assets.length > 0" class="relative lg:max-w-full lg:mr-2.5">
-      <!-- Asset Grid -->
-      <div class="flex flex-wrap gap-3 justify-start">
-        <!-- Row 1 -->
-        <div
-          v-for="asset in searchResults.assets.slice(0, 5)"
+    <!-- Results Grid -->
+    <div v-else-if="displayedAssets.length > 0" class="relative lg:max-w-full lg:mr-2.5">
+      <!-- Asset Grid - Responsive Grid Layout -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
+        <AssetCard
+          v-for="asset in displayedAssets"
           :key="asset.id"
-          class="bg-[#FAFAFC] rounded-lg overflow-hidden w-[280px] flex flex-col justify-center items-center p-6 hover:shadow-lg transition-shadow cursor-pointer"
-          @click="onAssetClick?.(asset)"
-        >
-          <img
-            :src="asset.imageUrl"
-            :alt="asset.title"
-            class="max-w-full max-h-[162px] object-contain"
-            @error="handleImageError"
-          />
-        </div>
+          :asset="asset"
+          @click="handleAssetClick"
+        />
       </div>
 
-      <!-- Row 2 -->
-      <div class="flex flex-wrap gap-3 justify-start mt-3" v-if="searchResults.assets.length > 5">
-        <div
-          v-for="asset in searchResults.assets.slice(5, 10)"
-          :key="asset.id"
-          class="bg-[#FAFAFC] rounded-lg overflow-hidden w-[280px] flex flex-col justify-center items-center p-6 hover:shadow-lg transition-shadow cursor-pointer"
-          @click="onAssetClick?.(asset)"
-        >
-          <img
-            :src="asset.imageUrl"
-            :alt="asset.title"
-            class="max-w-full max-h-[162px] object-contain"
-            @error="handleImageError"
-          />
-        </div>
-      </div>
-
-      <!-- Row 3 -->
-      <div class="flex flex-wrap gap-3 justify-start mt-3" v-if="searchResults.assets.length > 10">
-        <div
-          v-for="asset in searchResults.assets.slice(10, 15)"
-          :key="asset.id"
-          class="bg-[#FAFAFC] rounded-lg overflow-hidden w-[280px] flex flex-col justify-center items-center p-6 hover:shadow-lg transition-shadow cursor-pointer"
-          @click="onAssetClick?.(asset)"
-        >
-          <img
-            :src="asset.imageUrl"
-            :alt="asset.title"
-            class="max-w-full max-h-[162px] object-contain"
-            @error="handleImageError"
-          />
-        </div>
-      </div>
-
-      <!-- Load More Section -->
-      <div class="text-center mt-12 mb-8">
-        <div class="text-2xl font-bold text-[#2E334C] mb-4">
-          View all Limit 3D Illustrations
-        </div>
+      <!-- Lazy Loading Button -->
+      <div v-if="canLoadMore" class="text-center mb-8">
         <button
-          class="bg-[#0092E4] text-white px-12 py-3 rounded-xl font-semibold hover:bg-[#007BC7] transition-colors text-lg"
-          @click="onLoadMore?.()"
+          :disabled="isLazyLoading"
+          class="bg-[#0092E4] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#007BC7] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 mx-auto"
+          @click="handleLoadMore"
         >
-          Get Started - It's Free
+          <div v-if="isLazyLoading" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+          {{ isLazyLoading ? 'Loading...' : 'Load More Assets' }}
         </button>
-        <div class="mt-3">
-          <span class="text-[#2E334C]">Already have an account? </span>
-          <button class="text-[#0092E4] font-semibold hover:text-[#007BC7] transition-colors underline">
-            Log In
-          </button>
+    
+      </div>
+
+      <!-- Login Prompt Section -->
+      <div v-if="shouldShowLoginPrompt" class="text-center mt-12 mb-8 p-8 bg-gradient-to-r from-[#0092E4]/5 to-[#3D92DE]/5 rounded-xl border border-[#E4E9F2]">
+        <div class="max-w-2xl mx-auto">
+          <Icon name="heroicons:sparkles" class="w-12 h-12 text-[#0092E4] mx-auto mb-4" />
+          <h2 class="text-2xl font-bold text-[#2E334C] mb-4">
+            Unlock Unlimited Access
+          </h2>
+          <p class="text-[#636C7E] mb-6 text-lg">
+            Get unlimited downloads, premium assets, and exclusive design resources with a free account.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <button
+              class="bg-[#0092E4] text-white px-8 py-3 rounded-xl font-semibold hover:bg-[#007BC7] transition-colors text-lg min-w-[200px]"
+              @click="onLoadMore?.()"
+            >
+              Get Started - It's Free
+            </button>
+            <button class="text-[#0092E4] font-semibold hover:text-[#007BC7] transition-colors underline">
+              Already have an account? Log In
+            </button>
+          </div>
+          <div class="mt-6 flex justify-center items-center gap-6 text-sm text-[#636C7E]">
+            <div class="flex items-center gap-2">
+              <Icon name="heroicons:check-circle" class="w-4 h-4 text-green-500" />
+              <span>Free forever</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <Icon name="heroicons:check-circle" class="w-4 h-4 text-green-500" />
+              <span>No credit card required</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <Icon name="heroicons:check-circle" class="w-4 h-4 text-green-500" />
+              <span>Premium assets included</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

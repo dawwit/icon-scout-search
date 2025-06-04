@@ -58,8 +58,8 @@ watch(searchInput, (newValue) => {
             <Icon name="heroicons:magnifying-glass" class="w-6 h-6 text-[#636C7E]" />
             <div
               class="border-[#B4BAD6] border border-solid bg-[#B4BAD6] my-auto w-0 flex-shrink-0 h-7"
-            ></div>
-            <Icon name="heroicons:adjustments-horizontal" class="w-5 h-5 text-[#636C7E]" />
+            />
+            <Icon name="heroicons:magnifying-glass" class="w-5 h-5 text-[#636C7E]" />
             <input
               v-model="searchInput"
               type="text"
@@ -99,7 +99,7 @@ watch(searchInput, (newValue) => {
             All Features
           </NuxtLink>
           <div class="flex items-center justify-start cursor-pointer hover:text-[#0092E4] transition-colors">
-            <Icon name="heroicons:gift" class="w-4 h-4 mr-1 text-[#0092E4]" />
+            <Icon name="heroicons:gift" class="w-3 h-3 mr-2 text-[#0092E4]" />
             <span class="text-[#2E334D] my-auto">Free Asset</span>
           </div>
           <div

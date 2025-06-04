@@ -1,5 +1,6 @@
-import type { Asset, SearchFilters, SearchResults, Filter } from '~/types/search'
+import type { Asset, SearchResults } from '~/types/search'
 import { FilterType } from '~/types/search'
+import type { SelectedFilters } from '~/constants/filterOptions'
 
 // API Configuration
 const API_BASE_URL = 'https://api.iconscout.com/v3'
@@ -18,6 +19,7 @@ interface IconScoutAsset {
     png_256?: string
     png_512?: string
     svg?: string
+    thumb?: string
   }
   color_codes?: Array<{
     color_id: number
@@ -55,38 +57,55 @@ interface IconScoutSearchResponse {
 // Transform API response to internal format
 const transformAsset = (apiAsset: IconScoutAsset): Asset | null => {
   // Check if apiAsset has required properties
-  if (!apiAsset || !apiAsset.id || !apiAsset.name || !apiAsset.urls) {
-    console.warn('Invalid asset data:', apiAsset)
+  if (!apiAsset || !apiAsset.id || !apiAsset.name) {
+    console.warn('Invalid asset data - missing required fields:', apiAsset)
     return null
   }
 
-  // Choose the best available image URL (prefer larger sizes)
-  const imageUrl = apiAsset.urls.png_256 || 
-                   apiAsset.urls.png_128 || 
-                   apiAsset.urls.png_64 || 
-                   apiAsset.urls.svg || 
-                   ''
+  // Ensure we have a valid image URL or provide a default
+  let imageUrl = ''
+  if (apiAsset.urls) {
+    imageUrl = apiAsset.urls.png_256 || 
+               apiAsset.urls.png_128 || 
+               apiAsset.urls.png_64 || 
+               apiAsset.urls.svg || 
+               apiAsset.urls.thumb ||
+               ''
+  }
+  
+  const format = imageUrl.includes('.mp4') ? 'video' : 'image'
 
-  return {
-    id: apiAsset.id.toString(),
-    title: apiAsset.name,
-    description: '', // Not provided in this API response
-    imageUrl,
-    isPremium: apiAsset.price > 0,
-    tags: [], // Not provided in this API response
-    category: {
-      id: apiAsset.category?.id || apiAsset.asset,
-      name: apiAsset.category?.name || apiAsset.asset.charAt(0).toUpperCase() + apiAsset.asset.slice(1),
-      slug: apiAsset.category?.slug || apiAsset.asset
-    },
-    type: {
-      id: apiAsset.asset,
-      name: apiAsset.asset.charAt(0).toUpperCase() + apiAsset.asset.slice(1),
-      slug: apiAsset.asset
-    },
-    createdAt: apiAsset.created_at ? new Date(apiAsset.created_at) : new Date(),
-    author: apiAsset.author?.name || 'Unknown',
-    downloadCount: apiAsset.download_count || 0
+  // If no image URL, provide a data URI fallback to prevent external requests
+  if (!imageUrl) {
+    imageUrl = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDI4MCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMjgwIiBmaWxsPSIjRjBGMEYwIi8+Cjx0ZXh0IHg9IjE0MCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K'
+  }
+
+  try {
+    return {
+      id: apiAsset.id.toString(),
+      title: apiAsset.name || 'Untitled',
+      description: '', // Not provided in this API response
+      imageUrl,
+      isPremium: apiAsset.price > 0,
+      tags: [], // Not provided in this API response
+      category: {
+        id: apiAsset.category?.id || apiAsset.asset || 'unknown',
+        name: apiAsset.category?.name || (apiAsset.asset ? apiAsset.asset.charAt(0).toUpperCase() + apiAsset.asset.slice(1) : 'Unknown'),
+        slug: apiAsset.category?.slug || apiAsset.asset || 'unknown'
+      },
+      type: {
+        id: apiAsset.asset || 'unknown',
+        name: apiAsset.asset ? apiAsset.asset.charAt(0).toUpperCase() + apiAsset.asset.slice(1) : 'Unknown',
+        slug: apiAsset.asset || 'unknown'
+      },
+      createdAt: apiAsset.created_at ? new Date(apiAsset.created_at) : new Date(),
+      author: apiAsset.author?.name || 'Unknown',
+      downloadCount: apiAsset.download_count || 0,
+      format
+    }
+  } catch (err) {
+    console.error('Error transforming asset:', err, apiAsset)
+    return null
   }
 }
 
@@ -193,8 +212,6 @@ export const useSearch = () => {
 
   // Initialize search query from URL or default
   const searchQuery = ref((route.query.q as string) || '')
-  const selectedFilters = ref<Filter[]>([])
-  const currentCategory = ref('3D Illustrations')
   const isLoading = ref(false)
   const error = ref<string | null>(null)
   const searchResults = ref<SearchResults>({
@@ -224,100 +241,47 @@ export const useSearch = () => {
   // Watch for route query changes and sync search query
   watch(() => route.query.q, (newQuery) => {
     const queryString = (newQuery as string) || ''
-    if (queryString !== searchQuery.value) {
+    if (queryString !== searchQuery.value && !isUpdatingFilters.value) {
       searchQuery.value = queryString
-      performSearch()
+      nextTick(() => performSearch(1))
     }
   })
 
-  const filters = ref<SearchFilters>({
-    assets: {
-      id: 'assets',
-      name: 'Asset',
-      type: FilterType.ASSET,
-      expanded: true,
-      filters: [
-        { id: 'all-assets', name: 'All asset', value: 'all', type: FilterType.ASSET, selected: false },
-        { id: '3d-illustrations', name: '3D Illustrations', value: '3d', type: FilterType.ASSET, selected: true },
-        { id: 'lottie-animations', name: 'Lottie Animations', value: 'lottie', type: FilterType.ASSET, selected: false },
-        { id: 'illustrations', name: 'Illustrations', value: 'illustration', type: FilterType.ASSET, selected: false },
-        { id: 'icons', name: 'Icons', value: 'icon', type: FilterType.ASSET, selected: false }
-      ]
-    },
-    price: {
-      id: 'price',
-      name: 'Price',
-      type: FilterType.PRICE,
-      expanded: true,
-      filters: [
-        { id: 'free', name: 'Free', value: 'free', type: FilterType.PRICE, selected: false },
-        { id: 'premium', name: 'Premium', value: 'premium', type: FilterType.PRICE, selected: false },
-        { id: 'all-price', name: 'All', value: 'all', type: FilterType.PRICE, selected: true }
-      ]
-    },
-    view: {
-      id: 'view',
-      name: 'View',
-      type: FilterType.VIEW,
-      expanded: true,
-      filters: [
-        { id: 'pack', name: 'Pack', value: 'pack', type: FilterType.VIEW, selected: false },
-        { id: 'individual', name: 'Individual', value: 'individual', type: FilterType.VIEW, selected: true }
-      ]
-    },
-    sortBy: {
-      id: 'sort-by',
-      name: 'Sort by',
-      type: FilterType.SORT,
-      expanded: true,
-      filters: [
-        { id: 'popular', name: 'Popular', value: 'popular', type: FilterType.SORT, selected: true },
-        { id: 'latest', name: 'Latest', value: 'latest', type: FilterType.SORT, selected: false },
-        { id: 'featured', name: 'Featured', value: 'featured', type: FilterType.SORT, selected: false },
-        { id: 'relevant', name: 'Relevant', value: 'relevant', type: FilterType.SORT, selected: false }
-      ]
-    },
-    categories: {
-      id: 'categories',
-      name: 'Categories',
-      type: FilterType.CATEGORY,
-      expanded: false,
-      filters: []
-    }
+  // Simplified selected filters - just values
+  const selectedFilters = ref<SelectedFilters>({
+    [FilterType.ASSET]: 'all',
+    [FilterType.PRICE]: 'all',
+    [FilterType.VIEW]: 'individual',
+    [FilterType.SORT]: 'popular'
   })
 
-  const toggleFilter = (filterId: string, filterType: FilterType) => {
-    const filterGroup = filters.value[filterType as keyof SearchFilters]
-    if (filterGroup) {
-      // For radio-type filters (only one can be selected)
-      filterGroup.filters.forEach(filter => {
-        filter.selected = filter.id === filterId
-      })
-      
-      // Update selected filters
-      selectedFilters.value = selectedFilters.value.filter(f => f.type !== filterType)
-      const selectedFilter = filterGroup.filters.find(f => f.id === filterId)
-      if (selectedFilter?.selected) {
-        selectedFilters.value.push(selectedFilter)
-      }
+  // Add a flag to prevent loops during filter updates
+  const isUpdatingFilters = ref(false)
 
-      // Trigger search when filters change
-      performSearch()
-    }
+  const updateFilter = (filterType: FilterType, value: string) => {
+    if (isUpdatingFilters.value) return
+    
+    isUpdatingFilters.value = true
+    selectedFilters.value[filterType] = value
+    
+    // Reset the page to 1 when filters change
+    nextTick(() => {
+      performSearch(1)
+      isUpdatingFilters.value = false
+    })
   }
 
-  const toggleFilterGroup = (groupId: string) => {
-    const group = Object.values(filters.value).find(g => g.id === groupId)
-    if (group) {
-      group.expanded = !group.expanded
-    }
-  }
-
-  const getSelectedFilterValue = (filterType: FilterType): string | undefined => {
-    return selectedFilters.value.find(f => f.type === filterType)?.value
+  const toggleFilterGroup = (_groupId: string) => {
+    // This is now just for UI state, can be handled in the component
   }
 
   const performSearch = async (page = 1) => {
+    // Prevent multiple simultaneous searches
+    if (isLoading.value) {
+      console.log('Search already in progress, skipping...')
+      return
+    }
+    
     if (!config.public.iconscoutClientId) {
       error.value = 'API credentials not configured. Please set ICONSCOUT_CLIENT_ID environment variable. See README.md for setup instructions.'
       searchResults.value = {
@@ -330,14 +294,20 @@ export const useSearch = () => {
       return
     }
 
+    console.log(`Starting search - page: ${page}, filters:`, {
+      asset: selectedFilters.value[FilterType.ASSET],
+      price: selectedFilters.value[FilterType.PRICE],
+      sort: selectedFilters.value[FilterType.SORT]
+    })
+
     isLoading.value = true
     error.value = null
     
     try {
-      // Build search parameters
-      const assetType = getSelectedFilterValue(FilterType.ASSET)
-      const priceFilter = getSelectedFilterValue(FilterType.PRICE)
-      const sortFilter = getSelectedFilterValue(FilterType.SORT)
+      // Build search parameters using selected filters
+      const assetType = selectedFilters.value[FilterType.ASSET]
+      const priceFilter = selectedFilters.value[FilterType.PRICE]
+      const sortFilter = selectedFilters.value[FilterType.SORT]
 
       const searchParams = {
         query: searchQuery.value.trim() || undefined,
@@ -391,31 +361,15 @@ export const useSearch = () => {
   }
 
   const handleSearch = (query: string) => {
+    if (isUpdatingFilters.value || isLoading.value) return
+    
     searchQuery.value = query
     updateUrl(query)
-    performSearch()
-  }
-
-  const setCategory = (category: string) => {
-    currentCategory.value = category
-    
-    // Map category to asset type filter
-    const categoryMapping: Record<string, string> = {
-      'All Assets': 'all',
-      '3D Illustrations': '3d',
-      'Lottie Animations': 'lottie',
-      'Illustrations': 'illustration',
-      'Icons': 'icon'
-    }
-    
-    const assetType = categoryMapping[category] || 'all'
-    toggleFilter(Object.keys(categoryMapping).find(key => categoryMapping[key] === assetType) ? 
-      `${assetType}-${assetType === 'all' ? 'assets' : assetType === '3d' ? 'illustrations' : assetType}` : 
-      'all-assets', FilterType.ASSET)
+    nextTick(() => performSearch(1))
   }
 
   const loadMore = () => {
-    if (searchResults.value.hasMore && !isLoading.value) {
+    if (searchResults.value.hasMore && !isLoading.value && !isUpdatingFilters.value) {
       performSearch(searchResults.value.currentPage + 1)
     }
   }
@@ -437,22 +391,23 @@ export const useSearch = () => {
   }
 
   // Initialize with default search
+  let hasInitialized = false
   onMounted(() => {
-    performSearch()
+    if (!hasInitialized) {
+      hasInitialized = true
+      nextTick(() => performSearch(1))
+    }
   })
 
   return {
     searchQuery: readonly(searchQuery),
-    selectedFilters: readonly(selectedFilters),
-    currentCategory: readonly(currentCategory),
     isLoading: readonly(isLoading),
     error: readonly(error),
     searchResults,
-    filters,
-    toggleFilter,
+    selectedFilters: readonly(selectedFilters),
+    updateFilter,
     toggleFilterGroup,
     handleSearch,
-    setCategory,
     loadMore,
     handleDownload,
     performSearch

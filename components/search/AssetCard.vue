@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Asset } from '~/types/search'
+import { ref } from 'vue'
 
 interface Props {
   asset: Asset
@@ -11,9 +12,19 @@ defineEmits<{
   click: [asset: Asset]
 }>()
 
+// Track if we've already shown a fallback to prevent loops
+const hasFallback = ref(false)
+
 const handleImageError = (event: Event) => {
-  const target = event.target as HTMLImageElement
-  target.src = 'https://via.placeholder.com/280x280/f0f0f0/999999?text=No+Image'
+  const target = event.target as HTMLImageElement | HTMLVideoElement
+  
+  // Only set fallback once to prevent endless loops
+  if (!hasFallback.value) {
+    hasFallback.value = true
+    if (target.tagName === 'IMG') {
+      (target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDI4MCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMjgwIiBmaWxsPSIjRjBGMEYwIi8+Cjx0ZXh0IHg9IjE0MCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K'
+    }
+  }
 }
 
 const downloadAsset = () => {
@@ -44,32 +55,47 @@ const formatDownloadCount = (count: number): string => {
     <!-- Premium Badge -->
     <div
       v-if="asset.isPremium"
-      class="absolute top-3 right-3 z-10 bg-[#FFB800] text-white text-xs font-semibold px-2 py-1 rounded-full"
+      class="absolute top-3 right-3 z-20 bg-[#FFB800] text-white text-xs font-semibold px-2 py-1 rounded-full"
     >
       Premium
     </div>
 
     <!-- Image Container -->
-    <div class="aspect-square relative overflow-hidden">
+    <div class="aspect-square relative overflow-hidden bg-gray-100">
+      <video
+        v-if="asset.format === 'video'"
+        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        @error="handleImageError"
+      >
+        <source :src="asset.imageUrl" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+       
       <img
+        v-else
         :src="asset.imageUrl"
         :alt="asset.title"
         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
         @error="handleImageError"
       />
       
-      <!-- Overlay on hover -->
-      <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-        <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex gap-3">
+      <!-- Hover Overlay -->
+      <div class="absolute inset-0 z-10 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
+        <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex gap-3 z-20">
           <button
-            class="bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 transition-colors"
+            class="bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white hover:scale-110 transition-all duration-200"
             @click.stop="downloadAsset"
             :title="asset.isPremium ? 'Download Premium Asset' : 'Download Free Asset'"
           >
             <Icon name="heroicons:arrow-down-tray" class="w-5 h-5 text-[#636C7E]" />
           </button>
           <button
-            class="bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 transition-colors"
+            class="bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white hover:scale-110 transition-all duration-200"
             @click.stop="addToFavorites"
             title="Add to Favorites"
           >

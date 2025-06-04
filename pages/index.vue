@@ -21,60 +21,34 @@
         {{ searchResults.total }} assets exclusively selected by our designer community.
       </div>
 
-      <!-- Category Tabs -->
-      <div
-        class="flex mt-10 ml-[262px] items-stretch gap-6 text-[#2F72BC] font-semibold flex-wrap"
-      >
-        <button
-          :class="['flex-grow hover:text-black transition-colors', currentCategory === 'All Assets' ? 'text-black border-b-2 border-black' : '']"
-          @click="setCategory('All Assets')"
-        >
-          All Assets
-        </button>
-        <button
-          :class="['text-black', currentCategory === '3D Illustrations' ? 'border-b-2 border-black' : '']"
-          @click="setCategory('3D Illustrations')"
-        >
-          3D Illustrations
-        </button>
-        <button
-          :class="['flex-auto hover:text-black transition-colors', currentCategory === 'Lottie Animations' ? 'text-black border-b-2 border-black' : '']"
-          @click="setCategory('Lottie Animations')"
-        >
-          Lottie Animations
-        </button>
-        <button
-          :class="['hover:text-black transition-colors', currentCategory === 'Illustrations' ? 'text-black border-b-2 border-black' : '']"
-          @click="setCategory('Illustrations')"
-        >
-          Illustrations
-        </button>
-        <button
-          :class="['hover:text-black transition-colors', currentCategory === 'Icons' ? 'text-black border-b-2 border-black' : '']"
-          @click="setCategory('Icons')"
-        >
-          Icons
-        </button>
-      </div>
-      <div
-        class="border-black border-2 border-solid mt-2 ml-[349px] w-[99px] flex-shrink-0 h-0.5 lg:ml-2.5"
-        v-show="currentCategory === '3D Illustrations'"
-      ></div>
-    </div>
+     
 
     <!-- Main Layout Container -->
-    <div class="flex w-full px-5 bg-[#FAFAFC] pb-10">
+    <div class="flex w-full bg-[#FAFAFC] pb-10">
       <!-- Sidebar -->
       <div class="w-[262px] flex-shrink-0 mr-5">
         <SearchFilters 
-          :filters="filters"
-          :on-toggle-filter="toggleFilter"
+          :selected-filters="selectedFilters"
+          :on-filter-change="updateFilter"
           :on-toggle-filter-group="toggleFilterGroup"
         />
       </div>
 
       <!-- Main Content -->
       <div class="flex-1 min-w-0">
+         <!-- Category Tabs -->
+          <div
+            class="flex mt-10 items-stretch gap-6 text-[#2F72BC] font-semibold flex-wrap"
+          >
+            <button
+              v-for="option in FILTER_OPTIONS.assets.options"
+              :key="option.value"
+              :class="['cursor-pointer hover:text-black transition-colors', selectedFilters[FilterType.ASSET] === option.value ? 'text-black border-b-2 border-black' : '']"
+              @click="updateFilter(FilterType.ASSET, option.value)"
+            >
+              {{ option.name }}
+            </button>
+        </div>
         <SearchResults 
           :search-results="searchResults"
           :is-loading="isLoading"
@@ -83,6 +57,7 @@
           :on-tag-click="handleTagClick"
           :on-load-more="loadMore"
         />
+        </div>
       </div>
     </div>
 
@@ -93,25 +68,29 @@
 
 <script setup lang="ts">
 import type { Asset } from '~/types/search'
+import { FilterType } from '~/types/search'
+import { FILTER_OPTIONS } from '~/constants/filterOptions'
 
 // Use the search composable
 const {
   searchQuery,
-  currentCategory,
+  selectedFilters,
   isLoading,
   error,
   searchResults,
-  filters,
-  toggleFilter,
+  updateFilter,
   toggleFilterGroup,
   handleSearch,
-  setCategory,
   loadMore
 } = useSearch()
 
+const currentCategory = computed(() => {
+  return FILTER_OPTIONS[selectedFilters.value[FilterType.ASSET] || 'assets']?.name || 'Design Assets'
+})
+
 // SEO Meta
 useHead({
-  title: computed(() => `${searchResults.value.total} ${currentCategory.value} - IconScout Search`),
+  title: computed(() => `${searchQuery.value} ${currentCategory.value} | IconScout `),
   meta: [
     {
       name: "description",

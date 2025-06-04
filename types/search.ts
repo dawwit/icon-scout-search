@@ -36,6 +36,7 @@ export interface Asset {
   createdAt: Date
   author: string
   downloadCount: number
+  format: 'image' | 'video'
 }
 
 export interface AssetCategory {
@@ -71,7 +72,6 @@ export interface SearchFilters {
   price: FilterGroup
   view: FilterGroup
   sortBy: FilterGroup
-  categories: FilterGroup
 }
 
 export interface SearchQuery {

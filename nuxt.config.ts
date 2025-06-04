@@ -10,8 +10,16 @@ export default defineNuxtConfig({
     '@nuxt/scripts',
     '@nuxtjs/tailwindcss',
     'shadcn-nuxt',
-    '@vueuse/nuxt'
+    '@vueuse/nuxt',
+    '@nuxt/icon'
   ],
+
+  // Icon configuration
+  icon: {
+    size: '24px', // default icon size
+    class: '', // default CSS class
+    aliases: {},
+  },
 
   // Runtime configuration for environment variables
   runtimeConfig: {

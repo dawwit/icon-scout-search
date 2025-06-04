@@ -1,23 +1,37 @@
 <script setup lang="ts">
-import type { SearchFilters, FilterType } from '~/types/search'
+import type { FilterType } from '~/types/search'
+import { FILTER_OPTIONS, type SelectedFilters } from '~/constants/filterOptions'
 
 interface Props {
-  filters: SearchFilters
-  onToggleFilter?: (filterId: string, filterType: FilterType) => void
+  selectedFilters: SelectedFilters
+  onFilterChange?: (filterType: FilterType, value: string) => void
   onToggleFilterGroup?: (groupId: string) => void
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  onToggleFilter: () => {},
+  onFilterChange: () => {},
   onToggleFilterGroup: () => {}
 })
 
-const toggleFilter = (filterId: string, filterType: FilterType) => {
-  props.onToggleFilter(filterId, filterType)
+// Track which filter groups are expanded
+const expandedGroups = ref<Record<string, boolean>>({
+  assets: true,
+  price: true,
+  view: true,
+  sortBy: true
+})
+
+const toggleFilter = (filterType: FilterType, value: string) => {
+  props.onFilterChange(filterType, value)
 }
 
 const toggleFilterGroup = (groupId: string) => {
+  expandedGroups.value[groupId] = !expandedGroups.value[groupId]
   props.onToggleFilterGroup(groupId)
+}
+
+const isFilterSelected = (filterType: FilterType, value: string): boolean => {
+  return props.selectedFilters[filterType] === value
 }
 </script>
 
@@ -67,53 +81,53 @@ const toggleFilterGroup = (groupId: string) => {
 
       <!-- Dynamic Filter Groups -->
       <div 
-        v-for="group in filters" 
-        :key="group.id"
+        v-for="(group, groupKey) in FILTER_OPTIONS" 
+        :key="groupKey"
         class="max-w-full w-[260px] overflow-hidden"
       >
         <div class="flex w-full px-6 lg:px-5 pt-4 flex-col items-stretch">
           <button
-            @click="toggleFilterGroup(group.id)"
+            @click="toggleFilterGroup(groupKey)"
             class="flex items-stretch gap-5 font-averta text-sm text-[#1C2033] font-semibold whitespace-nowrap justify-between lg:whitespace-normal hover:bg-gray-50 -mx-2 px-2 py-1 rounded transition-colors"
           >
             <div class="text-[#1C2033] my-auto">{{ group.name }}</div>
             <Icon 
-              :name="group.expanded ? 'heroicons:chevron-up' : 'heroicons:chevron-down'" 
+              :name="expandedGroups[groupKey] ? 'heroicons:chevron-up' : 'heroicons:chevron-down'" 
               class="w-6 h-6 text-[#636C7E] transition-transform"
             />
           </button>
           
           <Transition name="slide-down">
-            <div v-if="group.expanded" class="flex mt-4 flex-col items-start justify-start">
+            <div v-if="expandedGroups[groupKey]" class="flex mt-4 flex-col items-start justify-start">
               <div 
-                v-for="filter in group.filters"
-                :key="filter.id"
+                v-for="option in group.options"
+                :key="option.value"
                 class="flex items-center gap-2 justify-start mb-2 last:mb-0"
               >
                 <button
-                  @click="toggleFilter(filter.id, filter.type)"
+                  @click="toggleFilter(option.type, option.value)"
                   class="bg-white flex px-1 flex-col overflow-hidden items-center justify-center w-6 h-6 hover:bg-gray-50 transition-colors"
                 >
                   <div
                     :class="[
                       'border border-solid rounded-full flex flex-shrink-0 h-4 w-4 transition-colors',
-                      filter.selected 
+                      isFilterSelected(option.type, option.value)
                         ? 'border-[#3D92DE] bg-[#3D92DE]' 
                         : 'border-[#8F95B2]'
                     ]"
                   >
                     <Icon 
-                      v-if="filter.selected"
+                      v-if="isFilterSelected(option.type, option.value)"
                       name="heroicons:check" 
                       class="w-3 h-3 text-white m-auto"
                     />
                   </div>
                 </button>
                 <button
-                  @click="toggleFilter(filter.id, filter.type)"
+                  @click="toggleFilter(option.type, option.value)"
                   class="text-[#2E334C] font-averta text-sm font-normal hover:text-[#0092E4] transition-colors"
                 >
-                  {{ filter.name }}
+                  {{ option.name }}
                 </button>
               </div>
             </div>

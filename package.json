@@ -16,8 +16,10 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "@iconify-json/heroicons": "^1.2.2",
     "@nuxt/eslint": "^1.4.1",
     "@nuxt/fonts": "^0.11.4",
+    "@nuxt/icon": "^1.13.0",
     "@nuxt/image": "^1.10.0",
     "@nuxt/scripts": "^0.11.8",
     "@nuxtjs/tailwindcss": "^7.0.0-beta.0",
