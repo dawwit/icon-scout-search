@@ -12,6 +12,7 @@ defineEmits<{
 }>()
 
 const { handleDownload } = useSearchStore()
+const { isFavorite, toggleFavorite } = useFavorites()
 
 // Track if we've already shown a fallback to prevent loops
 const hasFallback = ref(false)
@@ -32,9 +33,11 @@ const downloadAsset = () => {
   handleDownload(props.asset)
 }
 
-const addToFavorites = () => {
-  // Implement favorites logic when needed
+const handleToggleFavorite = () => {
+  toggleFavorite(props.asset)
 }
+
+const isAssetFavorite = computed(() => isFavorite(props.asset.uuid))
 </script>
 
 <template>
@@ -87,11 +90,20 @@ const addToFavorites = () => {
           </button>
           <!-- Favorite Button -->
           <button
-            class="bg-white/90 backdrop-blur-sm cursor-pointer w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg shadow-lg hover:bg-white hover:scale-110 transition-all duration-200 absolute top-2 sm:top-3 right-2 sm:right-3 touch-manipulation"
-            title="Add to Favorites"
-            @click.stop="addToFavorites"
+            :class="[
+              'backdrop-blur-sm cursor-pointer w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg shadow-lg hover:scale-110 transition-all duration-200 absolute top-2 sm:top-3 right-2 sm:right-3 touch-manipulation',
+              isAssetFavorite ? 'bg-red-500/90 hover:bg-red-500' : 'bg-white/90 hover:bg-white'
+            ]"
+            :title="isAssetFavorite ? 'Remove from Favorites' : 'Add to Favorites'"
+            @click.stop="handleToggleFavorite"
           >
-            <Icon name="heroicons:heart" class="w-4 h-4 sm:w-5 sm:h-5 text-[#636C7E]" />
+            <Icon 
+              :name="isAssetFavorite ? 'heroicons:heart-solid' : 'heroicons:heart'" 
+              :class="[
+                'w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-200',
+                isAssetFavorite ? 'text-white' : 'text-[#636C7E]'
+              ]" 
+            />
           </button>
         </div>
       </div>
@@ -109,11 +121,20 @@ const addToFavorites = () => {
         </div>
         <div class="absolute top-2 right-2">
           <button
-            class="bg-white/90 backdrop-blur-sm cursor-pointer w-8 h-8 flex items-center justify-center rounded-lg shadow-lg active:scale-95 transition-all duration-200 touch-manipulation"
-            title="Add to Favorites"
-            @click.stop="addToFavorites"
+            :class="[
+              'backdrop-blur-sm cursor-pointer w-8 h-8 flex items-center justify-center rounded-lg shadow-lg active:scale-95 transition-all duration-200 touch-manipulation',
+              isAssetFavorite ? 'bg-red-500/90' : 'bg-white/90'
+            ]"
+            :title="isAssetFavorite ? 'Remove from Favorites' : 'Add to Favorites'"
+            @click.stop="handleToggleFavorite"
           >
-            <Icon name="heroicons:heart" class="w-4 h-4 text-[#636C7E]" />
+            <Icon 
+              :name="isAssetFavorite ? 'heroicons:heart-solid' : 'heroicons:heart'" 
+              :class="[
+                'w-4 h-4 transition-colors duration-200',
+                isAssetFavorite ? 'text-white' : 'text-[#636C7E]'
+              ]" 
+            />
           </button>
         </div>
       </div>
