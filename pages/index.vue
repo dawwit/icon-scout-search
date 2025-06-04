@@ -11,34 +11,69 @@
 
     <!-- Main Content Area -->
     <div
-      class="bg-[#FAFAFC] flex mt-1.5 w-full px-10 lg:px-5 pt-6 pb-px flex-col overflow-hidden items-start font-averta text-sm lg:max-w-full"
+      class="bg-[#FAFAFC] flex mt-1.5 w-full px-4 sm:px-6 md:px-8 lg:px-10 pt-6 pb-px flex-col overflow-hidden items-start font-averta text-sm lg:max-w-full"
     >
       <!-- Page Title and Description -->
-      <div class="text-black text-[35px] font-bold">
+      <div class="text-black text-2xl sm:text-3xl md:text-[35px] font-bold">
         {{ searchStore.searchResults.total }} {{ currentCategory }}
       </div>
-      <div class="text-[#5A607D] font-normal mt-1">
+      <div class="text-[#5A607D] font-normal mt-1 text-sm sm:text-base">
         {{ searchStore.searchResults.total }} assets exclusively selected by our designer community.
       </div>
     </div>
 
     <!-- Main Layout Container -->
-    <div class="flex w-full bg-[#FAFAFC] pb-10">
-      <!-- Sidebar -->
-      <div class="w-[262px] flex-shrink-0 mr-5">
+    <div class="w-full bg-[#FAFAFC] pb-10">
+      <!-- Mobile Filters - Inline on mobile -->
+      <div class="lg:hidden w-full px-4 sm:px-6 md:px-8">
         <SearchFilters />
       </div>
 
-      <!-- Main Content -->
-      <div class="flex-1 min-w-0">
+      <!-- Desktop Layout -->
+      <div class="hidden lg:flex w-full">
+        <!-- Desktop Sidebar -->
+        <div class="w-[262px] flex-shrink-0 mr-5">
+          <SearchFilters />
+        </div>
+
+        <!-- Desktop Main Content -->
+        <div class="flex-1 min-w-0">
+          <!-- Category Tabs -->
+          <div
+            class="flex mt-10 items-stretch gap-6 text-[#2F72BC] font-semibold overflow-x-auto pb-2 scrollbar-hide"
+          >
+            <button
+              v-for="option in FILTER_OPTIONS.asset.options"
+              :key="option.value"
+              :class="[
+                'cursor-pointer hover:text-black transition-colors whitespace-nowrap text-base flex-shrink-0',
+                searchStore.selectedFilters[FilterType.ASSET] === option.value ? 'text-black border-b-2 border-black' : ''
+              ]"
+              @click="searchStore.updateFilter(FilterType.ASSET, option.value)"
+            >
+              {{ option.name }}
+            </button>
+          </div>
+          <SearchResults 
+            :on-asset-click="handleAssetClick"
+            :on-tag-click="handleTagClick"
+          />
+        </div>
+      </div>
+
+      <!-- Mobile Content -->
+      <div class="lg:hidden w-full px-4 sm:px-6 md:px-8">
         <!-- Category Tabs -->
         <div
-          class="flex mt-10 items-stretch gap-6 text-[#2F72BC] font-semibold flex-wrap"
+          class="flex mt-6 items-stretch gap-3 sm:gap-4 text-[#2F72BC] font-semibold overflow-x-auto pb-2 scrollbar-hide"
         >
           <button
             v-for="option in FILTER_OPTIONS.asset.options"
             :key="option.value"
-            :class="['cursor-pointer hover:text-black transition-colors', searchStore.selectedFilters[FilterType.ASSET] === option.value ? 'text-black border-b-2 border-black' : '']"
+            :class="[
+              'cursor-pointer hover:text-black transition-colors whitespace-nowrap text-sm sm:text-base flex-shrink-0',
+              searchStore.selectedFilters[FilterType.ASSET] === option.value ? 'text-black border-b-2 border-black' : ''
+            ]"
             @click="searchStore.updateFilter(FilterType.ASSET, option.value)"
           >
             {{ option.name }}
@@ -132,5 +167,14 @@ const handleTagClick = (tag: string) => {
 
 .line-height-normal {
   line-height: normal;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 </style>

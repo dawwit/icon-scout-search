@@ -234,6 +234,15 @@ export const useSearchStore = defineStore('search', () => {
     nextTick(() => performSearch(1))
   }
 
+  const clearFilters = () => {
+    selectedFilters.value = {
+      [FilterType.ASSET]: 'all',
+      [FilterType.PRICE]: 'all',
+      [FilterType.SORT]: 'popular'
+    }
+    nextTick(() => performSearch(1))
+  }
+
   const loadMore = () => {
     if (searchResults.value.hasMore && !isLoading.value) {
       performSearch(searchResults.value.currentPage + 1)
@@ -286,6 +295,7 @@ export const useSearchStore = defineStore('search', () => {
     
     // Actions
     updateFilter,
+    clearFilters,
     handleSearch,
     loadMore,
     handleDownload,

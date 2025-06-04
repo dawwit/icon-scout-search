@@ -39,13 +39,13 @@ const addToFavorites = () => {
 
 <template>
   <div
-    class="group relative bg-[#FAFAFC] rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] cursor-pointer"
+    class="group relative bg-[#FAFAFC] rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] cursor-pointer touch-manipulation"
     @click="$emit('click', asset)"
   >
     <!-- Premium Badge -->
     <div
       v-if="asset.isPremium"
-      class="absolute top-3 left-3 z-20 bg-[#FFB800] text-white text-xs font-semibold px-2 py-1 rounded-full"
+      class="absolute top-2 sm:top-3 left-2 sm:left-3 z-20 bg-[#FFB800] text-white text-xs font-semibold px-2 py-1 rounded-full"
     >
       Premium
     </div>
@@ -74,22 +74,46 @@ const addToFavorites = () => {
         @error="handleImageError"
       >
       
-      <!-- Hover Overlay -->
+      <!-- Hover Overlay - Mobile Optimized -->
       <div class="absolute inset-0 z-10 bg-black/0 group-hover:bg-black/30 transition-all duration-300 w-full h-full">
         <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex gap-3 z-20 relative w-full h-full">
+          <!-- Download Button -->
           <button
-            class="bg-white/90 backdrop-blur-sm cursor-pointer w-10 h-10 flex items-center justify-center rounded-lg shadow-lg hover:bg-white hover:scale-110 transition-all duration-200 absolute bottom-3 right-3"
+            class="bg-white/90 backdrop-blur-sm cursor-pointer w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg shadow-lg hover:bg-white hover:scale-110 transition-all duration-200 absolute bottom-2 sm:bottom-3 right-2 sm:right-3 touch-manipulation"
             :title="asset.isPremium ? 'Download Premium Asset' : 'Download Free Asset'"
             @click.stop="downloadAsset"
           >
-            <Icon name="heroicons:arrow-down-tray" class="w-5 h-5 text-[#636C7E]" />
+            <Icon name="heroicons:arrow-down-tray" class="w-4 h-4 sm:w-5 sm:h-5 text-[#636C7E]" />
           </button>
+          <!-- Favorite Button -->
           <button
-            class="bg-white/90 backdrop-blur-sm cursor-pointer w-10 h-10 flex items-center justify-center rounded-lg shadow-lg hover:bg-white hover:scale-110 transition-all duration-200 absolute top-3 right-3"
+            class="bg-white/90 backdrop-blur-sm cursor-pointer w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg shadow-lg hover:bg-white hover:scale-110 transition-all duration-200 absolute top-2 sm:top-3 right-2 sm:right-3 touch-manipulation"
             title="Add to Favorites"
             @click.stop="addToFavorites"
           >
-            <Icon name="heroicons:heart" class="w-5 h-5 text-[#636C7E]" />
+            <Icon name="heroicons:heart" class="w-4 h-4 sm:w-5 sm:h-5 text-[#636C7E]" />
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Action Buttons - Always visible on mobile -->
+      <div class="sm:hidden absolute inset-0 z-10">
+        <div class="absolute bottom-2 right-2 flex gap-2">
+          <button
+            class="bg-white/90 backdrop-blur-sm cursor-pointer w-8 h-8 flex items-center justify-center rounded-lg shadow-lg active:scale-95 transition-all duration-200 touch-manipulation"
+            :title="asset.isPremium ? 'Download Premium Asset' : 'Download Free Asset'"
+            @click.stop="downloadAsset"
+          >
+            <Icon name="heroicons:arrow-down-tray" class="w-4 h-4 text-[#636C7E]" />
+          </button>
+        </div>
+        <div class="absolute top-2 right-2">
+          <button
+            class="bg-white/90 backdrop-blur-sm cursor-pointer w-8 h-8 flex items-center justify-center rounded-lg shadow-lg active:scale-95 transition-all duration-200 touch-manipulation"
+            title="Add to Favorites"
+            @click.stop="addToFavorites"
+          >
+            <Icon name="heroicons:heart" class="w-4 h-4 text-[#636C7E]" />
           </button>
         </div>
       </div>
@@ -119,5 +143,16 @@ const addToFavorites = () => {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+/* Improve mobile interaction */
+@media (hover: none) and (pointer: coarse) {
+  .group:hover .opacity-0 {
+    opacity: 0 !important;
+  }
 }
 </style> 

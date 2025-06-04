@@ -89,12 +89,12 @@ const handleGetStarted = () => {
   <main class="mt-5 w-full lg:max-w-full lg:mt-5">
     <!-- Tags Section -->
     <div
-      class="flex w-full items-stretch gap-2.5 font-averta text-sm text-[#636C7E] font-normal text-center leading-none flex-wrap lg:max-w-full mb-6"
+      class="flex w-full items-stretch gap-2 sm:gap-2.5 font-averta text-xs sm:text-sm text-[#636C7E] font-normal text-center leading-none flex-wrap lg:max-w-full mb-6"
     >
       <button
         v-for="tag in popularTags"
         :key="tag"
-        class="rounded border border-[#E4E9F2] border-solid px-3 py-2 bg-white hover:bg-gray-50 hover:border-[#3D92DE] transition-colors"
+        class="rounded border border-[#E4E9F2] border-solid px-2 sm:px-3 py-2 bg-white hover:bg-gray-50 hover:border-[#3D92DE] transition-colors touch-manipulation"
         @click="handleTagClick(tag)"
       >
         {{ tag }}
@@ -110,7 +110,7 @@ const handleGetStarted = () => {
     <!-- Results Grid -->
     <div v-else-if="displayedAssets.length > 0" class="relative lg:max-w-full lg:mr-2.5">
       <!-- Asset Grid - Responsive Grid Layout -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8">
+      <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 sm:gap-3 lg:gap-4 mb-8">
         <AssetCard
           v-for="asset in displayedAssets"
           :key="asset.id"
@@ -123,7 +123,7 @@ const handleGetStarted = () => {
       <div v-if="canLoadMore" class="text-center mb-8">
         <button
           :disabled="isLazyLoading"
-          class="bg-[#0092E4] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#007BC7] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 mx-auto"
+          class="bg-[#0092E4] text-white px-6 sm:px-8 py-3 rounded-lg font-semibold hover:bg-[#007BC7] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 mx-auto text-sm sm:text-base touch-manipulation"
           @click="handleLoadMore"
         >
           <div v-if="isLazyLoading" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"/>
@@ -133,27 +133,27 @@ const handleGetStarted = () => {
       </div>
 
       <!-- Login Prompt Section -->
-      <div v-if="shouldShowLoginPrompt" class="text-center mt-12 mb-8 p-8 bg-gradient-to-r from-[#0092E4]/5 to-[#3D92DE]/5 rounded-xl border border-[#E4E9F2]">
+      <div v-if="shouldShowLoginPrompt" class="text-center mt-8 sm:mt-12 mb-8 p-4 sm:p-6 lg:p-8 bg-gradient-to-r from-[#0092E4]/5 to-[#3D92DE]/5 rounded-xl border border-[#E4E9F2] mx-2 sm:mx-0">
         <div class="max-w-2xl mx-auto">
-          <Icon name="heroicons:sparkles" class="w-12 h-12 text-[#0092E4] mx-auto mb-4" />
-          <h2 class="text-2xl font-bold text-[#2E334C] mb-4">
+          <Icon name="heroicons:sparkles" class="w-10 h-10 sm:w-12 sm:h-12 text-[#0092E4] mx-auto mb-3 sm:mb-4" />
+          <h2 class="text-xl sm:text-2xl font-bold text-[#2E334C] mb-3 sm:mb-4">
             Unlock Unlimited Access
           </h2>
-          <p class="text-[#636C7E] mb-6 text-lg">
+          <p class="text-[#636C7E] mb-4 sm:mb-6 text-base sm:text-lg">
             Get unlimited downloads, premium assets, and exclusive design resources with a free account.
           </p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div class="flex flex-col gap-3 sm:gap-4 justify-center items-center">
             <button
-              class="bg-[#0092E4] text-white px-8 py-3 rounded-xl font-semibold hover:bg-[#007BC7] transition-colors text-lg min-w-[200px]"
+              class="bg-[#0092E4] text-white px-6 sm:px-8 py-3 rounded-xl font-semibold hover:bg-[#007BC7] transition-colors text-base sm:text-lg w-full sm:w-auto sm:min-w-[200px] touch-manipulation"
               @click="handleGetStarted"
             >
               Get Started - It's Free
             </button>
-            <button class="text-[#0092E4] font-semibold hover:text-[#007BC7] transition-colors underline">
+            <button class="text-[#0092E4] font-semibold hover:text-[#007BC7] transition-colors underline text-sm sm:text-base">
               Already have an account? Log In
             </button>
           </div>
-          <div class="mt-6 flex justify-center items-center gap-6 text-sm text-[#636C7E]">
+          <div class="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-6 text-xs sm:text-sm text-[#636C7E]">
             <div class="flex items-center gap-2">
               <Icon name="heroicons:check-circle" class="w-4 h-4 text-green-500" />
               <span>Free forever</span>
@@ -172,10 +172,10 @@ const handleGetStarted = () => {
     </div>
 
     <!-- Empty State -->
-    <div v-else class="flex flex-col items-center justify-center py-16">
-      <Icon name="heroicons:magnifying-glass" class="w-16 h-16 text-[#9CA3AF] mb-4" />
-      <h3 class="text-xl font-semibold text-[#2E334C] mb-2">No results found</h3>
-      <p class="text-[#636C7E] text-center max-w-md">
+    <div v-else class="flex flex-col items-center justify-center py-12 sm:py-16 px-4">
+      <Icon name="heroicons:magnifying-glass" class="w-12 h-12 sm:w-16 sm:h-16 text-[#9CA3AF] mb-3 sm:mb-4" />
+      <h3 class="text-lg sm:text-xl font-semibold text-[#2E334C] mb-2 text-center">No results found</h3>
+      <p class="text-[#636C7E] text-center max-w-md text-sm sm:text-base">
         Try adjusting your search terms or filters to find what you're looking for.
       </p>
     </div>
@@ -190,5 +190,9 @@ const handleGetStarted = () => {
     Roboto,
     Helvetica,
     sans-serif;
+}
+
+.touch-manipulation {
+  touch-action: manipulation;
 }
 </style>
